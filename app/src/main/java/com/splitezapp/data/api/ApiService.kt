@@ -133,4 +133,8 @@ interface ApiService {
     // Promos
     @GET("promos")
     suspend fun getPromos(@Query("screen") screen: String? = null): List<PromotionalBanner>
+
+    // Dashboard Elements
+    @GET("dashboard/elements")
+    suspend fun getDashboardElements(@Query("screen") screen: String? = null): List<DashboardElement>
 }

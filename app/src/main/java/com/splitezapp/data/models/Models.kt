@@ -265,6 +265,24 @@ data class PromotionalBanner(
     val priority: Int
 )
 
+// ── Dashboard Elements ─────────────────────────────────────────────────
+data class DashboardElement(
+    val id: String,
+    val type: String,
+    val title: String? = null,
+    val subtitle: String? = null,
+    val body: String? = null,
+    val image: String? = null,
+    val cta: String? = null,
+    val destination: String? = null,
+    val targetScreen: String = "home",
+    val position: Int = 0,
+    val config: Map<String, Any>? = null,
+    val startDate: String? = null,
+    val endDate: String? = null,
+    val status: String = "Active"
+)
+
 // ── Generic ─────────────────────────────────────────────────────────────
 data class SuccessResponse(val success: Boolean)
 data class PaginatedResponse<T>(val items: List<T>, val nextCursor: String?)

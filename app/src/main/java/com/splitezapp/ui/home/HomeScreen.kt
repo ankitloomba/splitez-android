@@ -23,11 +23,13 @@ import kotlinx.coroutines.launch
 fun HomeScreen(user: UserProfile?) {
     var balances by remember { mutableStateOf<List<Balance>>(emptyList()) }
     var activities by remember { mutableStateOf<List<Activity>>(emptyList()) }
+    var dashboardElements by remember { mutableStateOf<List<DashboardElement>>(emptyList()) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         try { balances = ApiClient.api.getBalances() } catch (_: Exception) {}
         try { activities = ApiClient.api.getFeed(mapOf("limit" to "10")).items } catch (_: Exception) {}
+        try { dashboardElements = ApiClient.api.getDashboardElements("home") } catch (_: Exception) {}
     }
 
     Scaffold(
@@ -45,6 +47,13 @@ fun HomeScreen(user: UserProfile?) {
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
+            }
+
+            // Dashboard Elements
+            if (dashboardElements.isNotEmpty()) {
+                items(dashboardElements, key = { it.id }) { element ->
+                    DashboardElementCard(element)
+                }
             }
 
             // Balances
@@ -105,6 +114,43 @@ fun HomeScreen(user: UserProfile?) {
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DashboardElementCard(element: DashboardElement) {
+    val bgColor = when (element.type) {
+        "announcement" -> Primary.copy(alpha = 0.1f)
+        "tip" -> Color(0xFFFFF3CD)
+        "spotlight" -> Accent.copy(alpha = 0.1f)
+        else -> MaterialTheme.colorScheme.surfaceVariant
+    }
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = bgColor)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            element.title?.let {
+                Text(
+                    it,
+                    style = if (element.type == "greeting") MaterialTheme.typography.headlineSmall
+                            else MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            element.subtitle?.let {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(it, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+            }
+            element.body?.let {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(it, style = MaterialTheme.typography.bodyMedium)
+            }
+            element.cta?.let {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(it, style = MaterialTheme.typography.labelLarge, color = Primary, fontWeight = FontWeight.Bold)
             }
         }
     }
