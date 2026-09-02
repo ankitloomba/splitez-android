@@ -283,6 +283,17 @@ data class DashboardElement(
     val status: String = "Active"
 )
 
+// ── Ad Placements ──────────────────────────────────────────────────────
+data class AdPlacement(
+    val name: String,
+    val adType: String,           // banner | interstitial | native | rewarded
+    val position: String,
+    val adUnitIos: String? = null,
+    val adUnitAndroid: String? = null,
+    val frequency: Int? = null,
+    val adFreeSkip: Boolean? = null,
+)
+
 // ── Generic ─────────────────────────────────────────────────────────────
 data class SuccessResponse(val success: Boolean)
 data class PaginatedResponse<T>(val items: List<T>, val nextCursor: String?)

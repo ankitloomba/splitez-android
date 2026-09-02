@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.splitezapp.data.api.ApiClient
 import com.splitezapp.data.models.*
 import com.splitezapp.ui.components.AvatarView
+import com.splitezapp.ui.ads.AdBannerSlot
 import com.splitezapp.ui.theme.*
 import kotlinx.coroutines.launch
 
@@ -54,6 +55,11 @@ fun HomeScreen(user: UserProfile?) {
                 items(dashboardElements, key = { it.id }) { element ->
                     DashboardElementCard(element)
                 }
+            }
+
+            // Ad banner
+            item {
+                AdBannerSlot(screen = "home", placementName = "home_banner")
             }
 
             // Balances

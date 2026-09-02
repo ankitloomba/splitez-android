@@ -1,5 +1,7 @@
 package com.splitezapp.data.analytics
 
+import android.content.Context
+import android.os.Build
 import com.splitezapp.data.api.ApiClient
 import kotlinx.coroutines.*
 import java.util.UUID
@@ -13,6 +15,34 @@ object AnalyticsTracker {
     private val queue = CopyOnWriteArrayList<TrackEvent>()
     private var sessionId: String = UUID.randomUUID().toString()
     private const val PLATFORM = "android"
+
+    /** Persistent install ID stored in SharedPreferences. */
+    private fun getInstallId(context: Context): String {
+        val prefs = context.getSharedPreferences("splitez_prefs", Context.MODE_PRIVATE)
+        val key = "install_id"
+        return prefs.getString(key, null) ?: run {
+            val newId = UUID.randomUUID().toString()
+            prefs.edit().putString(key, newId).apply()
+            newId
+        }
+    }
+
+    /** Register this device install with the backend. */
+    fun registerInstall(context: Context) {
+        scope.launch {
+            try {
+                ApiClient.api.registerInstall(
+                    InstallPayload(
+                        installId = getInstallId(context),
+                        platform = PLATFORM,
+                        appVersion = "1.0.0",
+                        osVersion = Build.VERSION.RELEASE,
+                        deviceModel = Build.MODEL,
+                    )
+                )
+            } catch (_: Exception) { /* non-critical */ }
+        }
+    }
 
     fun startSession() {
         sessionId = UUID.randomUUID().toString()
@@ -65,3 +95,11 @@ data class TrackEvent(
 )
 
 data class BatchPayload(val events: List<TrackEvent>)
+
+data class InstallPayload(
+    val installId: String,
+    val platform: String,
+    val appVersion: String? = null,
+    val osVersion: String? = null,
+    val deviceModel: String? = null,
+)

@@ -141,4 +141,14 @@ interface ApiService {
     // Analytics
     @POST("analytics/events/batch")
     suspend fun trackEventsBatch(@Body body: com.splitezapp.data.analytics.BatchPayload): SuccessResponse
+
+    @POST("analytics/installs")
+    suspend fun registerInstall(@Body body: com.splitezapp.data.analytics.InstallPayload): SuccessResponse
+
+    // Ads
+    @GET("ads/placements")
+    suspend fun getAdPlacements(
+        @Query("screen") screen: String,
+        @Query("platform") platform: String = "android"
+    ): List<AdPlacement>
 }
