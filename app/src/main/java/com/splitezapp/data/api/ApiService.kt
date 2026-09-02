@@ -137,4 +137,8 @@ interface ApiService {
     // Dashboard Elements
     @GET("dashboard/elements")
     suspend fun getDashboardElements(@Query("screen") screen: String? = null): List<DashboardElement>
+
+    // Analytics
+    @POST("analytics/events/batch")
+    suspend fun trackEventsBatch(@Body body: com.splitezapp.data.analytics.BatchPayload): SuccessResponse
 }

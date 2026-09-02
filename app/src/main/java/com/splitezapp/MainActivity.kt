@@ -21,6 +21,7 @@ import com.splitezapp.ui.home.HomeScreen
 import com.splitezapp.ui.settings.SettingsScreen
 import com.splitezapp.ui.theme.SplitEZTheme
 import com.splitezapp.ui.trips.TripsScreen
+import com.splitezapp.data.analytics.AnalyticsTracker
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,6 +60,16 @@ fun AuthFlow(authVM: AuthViewModel) {
 @Composable
 fun MainScreen(authVM: AuthViewModel) {
     var selectedTab by remember { mutableIntStateOf(0) }
+    val screens = listOf("home", "groups", "trips", "finances", "settings")
+
+    LaunchedEffect(Unit) {
+        AnalyticsTracker.startSession()
+        AnalyticsTracker.trackScreen("home")
+    }
+
+    LaunchedEffect(selectedTab) {
+        AnalyticsTracker.trackScreen(screens[selectedTab])
+    }
 
     Scaffold(
         bottomBar = {
