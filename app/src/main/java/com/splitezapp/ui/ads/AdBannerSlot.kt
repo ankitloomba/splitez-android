@@ -54,7 +54,7 @@ fun AdBannerSlot(
             modifier = modifier
                 .fillMaxWidth()
                 .height(50.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center,
         ) {
