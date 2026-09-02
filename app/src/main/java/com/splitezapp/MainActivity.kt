@@ -22,12 +22,15 @@ import com.splitezapp.ui.settings.SettingsScreen
 import com.splitezapp.ui.theme.SplitEZTheme
 import com.splitezapp.ui.trips.TripsScreen
 import com.splitezapp.data.analytics.AnalyticsTracker
+import com.splitezapp.push.PushNotificationService
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ApiClient.init(applicationContext)
         AnalyticsTracker.registerInstall(applicationContext)
+        PushNotificationService.createNotificationChannel(this)
+        PushNotificationService.registerToken(this)
         enableEdgeToEdge()
 
         setContent {
