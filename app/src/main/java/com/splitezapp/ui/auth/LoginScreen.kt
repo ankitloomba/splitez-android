@@ -14,6 +14,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import com.splitezapp.ui.theme.Negative
+import com.splitezapp.ui.theme.Positive
 import com.splitezapp.ui.theme.Primary
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -170,6 +175,11 @@ fun RegisterScreen(
                 label = { Text("Password (min 8 chars)") }, visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(), singleLine = true)
 
+            if (password.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                PasswordStrengthIndicator(password)
+            }
+
             viewModel.error?.let {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(it, color = MaterialTheme.colorScheme.error)
@@ -186,5 +196,80 @@ fun RegisterScreen(
                 else Text("Sign Up")
             }
         }
+    }
+}
+
+// Password strength
+
+private enum class PasswordStrengthLevel(val label: String, val fraction: Float, val color: @Composable () -> Color) {
+    WEAK("Weak", 0.25f, { Negative }),
+    FAIR("Fair", 0.5f, { Color(0xFFFF9800) }),
+    GOOD("Good", 0.75f, { Primary }),
+    STRONG("Strong", 1.0f, { Positive });
+}
+
+private fun evaluateStrength(password: String): PasswordStrengthLevel {
+    var score = 0
+    if (password.length >= 8) score++
+    if (password.length >= 12) score++
+    if (password.any { it.isUpperCase() }) score++
+    if (password.any { it.isLowerCase() }) score++
+    if (password.any { it.isDigit() }) score++
+    if (password.any { !it.isLetterOrDigit() }) score++
+    return when (score) {
+        in 0..2 -> PasswordStrengthLevel.WEAK
+        3 -> PasswordStrengthLevel.FAIR
+        in 4..5 -> PasswordStrengthLevel.GOOD
+        else -> PasswordStrengthLevel.STRONG
+    }
+}
+
+@Composable
+private fun PasswordStrengthIndicator(password: String) {
+    val strength = evaluateStrength(password)
+    val color = strength.color()
+
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        // Strength bar
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(6.dp)
+                .clip(RoundedCornerShape(3.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(strength.fraction)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(color)
+            )
+        }
+
+        Text(strength.label, style = MaterialTheme.typography.labelSmall, color = color)
+
+        // Rules
+        PasswordRule("At least 8 characters", password.length >= 8)
+        PasswordRule("Uppercase letter", password.any { it.isUpperCase() })
+        PasswordRule("Lowercase letter", password.any { it.isLowerCase() })
+        PasswordRule("Number", password.any { it.isDigit() })
+        PasswordRule("Special character", password.any { !it.isLetterOrDigit() })
+    }
+}
+
+@Composable
+private fun PasswordRule(text: String, met: Boolean) {
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            if (met) "✓" else "○",
+            style = MaterialTheme.typography.labelSmall,
+            color = if (met) Positive else MaterialTheme.colorScheme.outline
+        )
+        Text(
+            text,
+            style = MaterialTheme.typography.labelSmall,
+            color = if (met) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
+        )
     }
 }
