@@ -12,7 +12,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
-    private const val BASE_URL = "https://splitez-backend-production.up.railway.app/api/"
+    private const val BASE_URL = "https://splitez-backend-production.up.railway.app/api/v1/"
     private const val PREFS_NAME = "splitez_auth"
 
     /** Full base URL for manual requests (exports, imports). */
