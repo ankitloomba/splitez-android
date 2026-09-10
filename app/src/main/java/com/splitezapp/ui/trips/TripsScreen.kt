@@ -69,6 +69,8 @@ fun TripsScreen() {
 fun CreateTripDialog(onDismiss: () -> Unit, onCreated: suspend () -> Unit) {
     var name by remember { mutableStateOf("") }
     var destination by remember { mutableStateOf("") }
+    var startDate by remember { mutableStateOf("") }
+    var endDate by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
     AlertDialog(
@@ -81,6 +83,12 @@ fun CreateTripDialog(onDismiss: () -> Unit, onCreated: suspend () -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(value = destination, onValueChange = { destination = it },
                     label = { Text("Destination") }, modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(value = startDate, onValueChange = { startDate = it },
+                    label = { Text("Start Date (YYYY-MM-DD)") }, modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(value = endDate, onValueChange = { endDate = it },
+                    label = { Text("End Date (YYYY-MM-DD)") }, modifier = Modifier.fillMaxWidth())
             }
         },
         confirmButton = {
@@ -88,7 +96,12 @@ fun CreateTripDialog(onDismiss: () -> Unit, onCreated: suspend () -> Unit) {
                 onClick = {
                     scope.launch {
                         try {
-                            ApiClient.api.createTrip(CreateTripRequest(name, destination.ifEmpty { null }))
+                            ApiClient.api.createTrip(CreateTripRequest(
+                                name,
+                                destination.ifEmpty { null },
+                                startDate.ifEmpty { null },
+                                endDate.ifEmpty { null }
+                            ))
                             onCreated()
                         } catch (_: Exception) {}
                     }
