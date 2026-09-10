@@ -160,12 +160,19 @@ fun AddIncomeDialog(onDismiss: () -> Unit, onCreated: suspend () -> Unit) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPersonalExpenseDialog(onDismiss: () -> Unit, onCreated: suspend () -> Unit) {
     var description by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("") }
+    var categories by remember { mutableStateOf<List<Category>>(emptyList()) }
+    var selectedCategory by remember { mutableStateOf<Category?>(null) }
+    var categoryExpanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        try { categories = ApiClient.api.getCategories() } catch (_: Exception) {}
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -178,8 +185,34 @@ fun AddPersonalExpenseDialog(onDismiss: () -> Unit, onCreated: suspend () -> Uni
                 OutlinedTextField(value = amount, onValueChange = { amount = it },
                     label = { Text("Amount") }, modifier = Modifier.fillMaxWidth())
                 Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(value = category, onValueChange = { category = it },
-                    label = { Text("Category") }, modifier = Modifier.fillMaxWidth())
+                ExposedDropdownMenuBox(
+                    expanded = categoryExpanded,
+                    onExpandedChange = { categoryExpanded = it }
+                ) {
+                    OutlinedTextField(
+                        value = selectedCategory?.let { "${it.icon ?: "📦"} ${it.name}" } ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Category") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
+                        modifier = Modifier.fillMaxWidth().menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = categoryExpanded,
+                        onDismissRequest = { categoryExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("None") },
+                            onClick = { selectedCategory = null; categoryExpanded = false }
+                        )
+                        categories.forEach { cat ->
+                            DropdownMenuItem(
+                                text = { Text("${cat.icon ?: "📦"} ${cat.name}") },
+                                onClick = { selectedCategory = cat; categoryExpanded = false }
+                            )
+                        }
+                    }
+                }
             }
         },
         confirmButton = {
@@ -188,7 +221,7 @@ fun AddPersonalExpenseDialog(onDismiss: () -> Unit, onCreated: suspend () -> Uni
                     val amt = amount.toDoubleOrNull() ?: return@launch
                     try {
                         ApiClient.api.createPersonalExpense(CreatePersonalExpenseRequest(
-                            (amt * 100).toInt(), description, category.ifEmpty { null }))
+                            (amt * 100).toInt(), description, selectedCategory?.name))
                         onCreated()
                     } catch (_: Exception) {}
                 }
