@@ -6,12 +6,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-val Primary = Color(0xFF3890F5)
-val Accent = Color(0xFF22D4A6)
-val Positive = Color(0xFF2EC76F)
-val Negative = Color(0xFFEB5757)
-val Surface = Color(0xFFF8F9FA)
+// Core palette — aligned with design spec
+val Primary = Color(0xFF4338CA)        // Indigo
+val PrimaryLight = Color(0xFFC7D2FE)   // Light indigo
+val DarkBg = Color(0xFF10142A)         // Deep navy header
+val Positive = Color(0xFF4ADE80)       // Green
+val Negative = Color(0xFFDC2626)       // Red
+val Accent = Color(0xFFEEF0FF)         // Tinted surface
+val Muted = Color(0xFF8792A8)          // Inactive/secondary
+val Surface = Color(0xFFF1F5F9)
 val OnSurface = Color(0xFF1A1A1A)
+val BalanceGreen = Color(0xFF16A34A)
+val TextSecondary = Color(0xFF64748B)
+val Divider = Color(0xFFEEF0F4)
+val PillActive = Color(0xFF4338CA)
+val PillInactive = Color(0xFFF1F5F9)
 
 private val LightColorScheme = lightColorScheme(
     primary = Primary,
