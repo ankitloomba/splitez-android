@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TripsScreen() {
+fun TripsScreen(onTripTap: (String) -> Unit = {}) {
     var trips by remember { mutableStateOf<List<Trip>>(emptyList()) }
     var showCreate by remember { mutableStateOf(false) }
 
@@ -46,7 +46,8 @@ fun TripsScreen() {
                         leadingContent = {
                             Icon(Icons.Default.Flight, null, tint = Accent,
                                 modifier = Modifier.size(40.dp))
-                        }
+                        },
+                        modifier = Modifier.clickable { onTripTap(trip.id) }
                     )
                     HorizontalDivider()
                 }

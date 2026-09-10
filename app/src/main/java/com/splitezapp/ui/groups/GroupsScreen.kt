@@ -20,10 +20,9 @@ import com.splitezapp.ui.theme.Primary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupsScreen() {
+fun GroupsScreen(onGroupTap: (String) -> Unit = {}) {
     var groups by remember { mutableStateOf<List<Group>>(emptyList()) }
     var showCreate by remember { mutableStateOf(false) }
-    var selectedGroup by remember { mutableStateOf<Group?>(null) }
 
     LaunchedEffect(Unit) {
         try { groups = ApiClient.api.getGroups() } catch (_: Exception) {}
@@ -49,7 +48,7 @@ fun GroupsScreen() {
                             Icon(Icons.Default.Group, null, tint = Primary,
                                 modifier = Modifier.size(40.dp))
                         },
-                        modifier = Modifier.clickable { selectedGroup = group }
+                        modifier = Modifier.clickable { onGroupTap(group.id) }
                     )
                     HorizontalDivider()
                 }

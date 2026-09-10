@@ -10,14 +10,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.splitezapp.data.models.UserProfile
-import com.splitezapp.ui.components.AvatarView
 import com.splitezapp.data.models.UserSummary
+import com.splitezapp.NavDestination
+import com.splitezapp.ui.components.AvatarView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     user: UserProfile?,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onNavigate: (NavDestination) -> Unit = {}
 ) {
     Scaffold(
         topBar = { TopAppBar(title = { Text("Settings") }) }
@@ -38,6 +40,35 @@ fun SettingsScreen(
                     )
                     HorizontalDivider()
                 }
+            }
+
+            item {
+                ListItem(
+                    headlineContent = { Text("Notifications") },
+                    leadingContent = { Icon(Icons.Default.Notifications, null) },
+                    modifier = Modifier.clickable { onNavigate(NavDestination.Notifications) }
+                )
+                HorizontalDivider()
+            }
+
+            item {
+                ListItem(
+                    headlineContent = { Text("Export Data") },
+                    supportingContent = { Text("CSV or PDF") },
+                    leadingContent = { Icon(Icons.Default.FileDownload, null) },
+                    modifier = Modifier.clickable { onNavigate(NavDestination.Export) }
+                )
+                HorizontalDivider()
+            }
+
+            item {
+                ListItem(
+                    headlineContent = { Text("Import Expenses") },
+                    supportingContent = { Text("CSV, Excel, Splitwise") },
+                    leadingContent = { Icon(Icons.Default.FileUpload, null) },
+                    modifier = Modifier.clickable { onNavigate(NavDestination.Import) }
+                )
+                HorizontalDivider()
             }
 
             item {

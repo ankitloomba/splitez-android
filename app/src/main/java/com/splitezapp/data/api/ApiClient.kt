@@ -15,8 +15,18 @@ object ApiClient {
     private const val BASE_URL = "https://splitez-backend-production.up.railway.app/api/"
     private const val PREFS_NAME = "splitez_auth"
 
+    /** Full base URL for manual requests (exports, imports). */
+    val baseUrl: String get() = BASE_URL
+
+    /** The auth token for manual requests. */
+    val token: String? get() = accessToken
+
     private lateinit var prefs: SharedPreferences
     lateinit var api: ApiService
+        private set
+
+    /** Raw OkHttpClient with auth header for multipart uploads. */
+    lateinit var rawClient: OkHttpClient
         private set
 
     var accessToken: String?
@@ -45,6 +55,7 @@ object ApiClient {
         val client = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor())
             .build()
+        rawClient = client
 
         val gson = GsonBuilder().setLenient().create()
 
