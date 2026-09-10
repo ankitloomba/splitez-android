@@ -4,12 +4,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.splitezapp.data.api.ApiClient
 import com.splitezapp.ui.auth.AuthViewModel
@@ -80,7 +86,8 @@ sealed class NavDestination {
 fun MainScreen(authVM: AuthViewModel) {
     var selectedTab by remember { mutableIntStateOf(0) }
     var navDest by remember { mutableStateOf<NavDestination>(NavDestination.Tabs) }
-    val screens = listOf("home", "groups", "trips", "finances", "settings")
+    var showAddExpense by remember { mutableStateOf(false) }
+    val screens = listOf("home", "friends", "add", "activity", "settings")
 
     LaunchedEffect(Unit) {
         AnalyticsTracker.startSession()
@@ -112,37 +119,88 @@ fun MainScreen(authVM: AuthViewModel) {
         is NavDestination.Tabs -> {
             Scaffold(
                 bottomBar = {
-                    NavigationBar {
-                        NavigationBarItem(
-                            selected = selectedTab == 0,
-                            onClick = { selectedTab = 0 },
-                            icon = { Icon(Icons.Default.Home, "Home") },
-                            label = { Text("Home") }
-                        )
-                        NavigationBarItem(
-                            selected = selectedTab == 1,
-                            onClick = { selectedTab = 1 },
-                            icon = { Icon(Icons.Default.Group, "Groups") },
-                            label = { Text("Groups") }
-                        )
-                        NavigationBarItem(
-                            selected = selectedTab == 2,
-                            onClick = { selectedTab = 2 },
-                            icon = { Icon(Icons.Default.Flight, "Trips") },
-                            label = { Text("Trips") }
-                        )
-                        NavigationBarItem(
-                            selected = selectedTab == 3,
-                            onClick = { selectedTab = 3 },
-                            icon = { Icon(Icons.Default.BarChart, "Finances") },
-                            label = { Text("Finances") }
-                        )
-                        NavigationBarItem(
-                            selected = selectedTab == 4,
-                            onClick = { selectedTab = 4 },
-                            icon = { Icon(Icons.Default.MoreHoriz, "More") },
-                            label = { Text("More") }
-                        )
+                    Box {
+                        NavigationBar(
+                            containerColor = com.splitezapp.ui.theme.DarkBg,
+                            contentColor = com.splitezapp.ui.theme.Muted
+                        ) {
+                            NavigationBarItem(
+                                selected = selectedTab == 0,
+                                onClick = { selectedTab = 0 },
+                                icon = { Icon(Icons.Default.Home, "Home") },
+                                label = { Text("Home") },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = com.splitezapp.ui.theme.PrimaryLight,
+                                    selectedTextColor = com.splitezapp.ui.theme.PrimaryLight,
+                                    unselectedIconColor = com.splitezapp.ui.theme.Muted,
+                                    unselectedTextColor = com.splitezapp.ui.theme.Muted,
+                                    indicatorColor = Color.Transparent
+                                )
+                            )
+                            NavigationBarItem(
+                                selected = selectedTab == 1,
+                                onClick = { selectedTab = 1 },
+                                icon = { Icon(Icons.Default.People, "Friends") },
+                                label = { Text("Friends") },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = com.splitezapp.ui.theme.PrimaryLight,
+                                    selectedTextColor = com.splitezapp.ui.theme.PrimaryLight,
+                                    unselectedIconColor = com.splitezapp.ui.theme.Muted,
+                                    unselectedTextColor = com.splitezapp.ui.theme.Muted,
+                                    indicatorColor = Color.Transparent
+                                )
+                            )
+                            // Spacer for floating add button
+                            NavigationBarItem(
+                                selected = false,
+                                onClick = { showAddExpense = true },
+                                icon = { Spacer(modifier = Modifier.size(24.dp)) },
+                                label = { Text("") },
+                                enabled = false
+                            )
+                            NavigationBarItem(
+                                selected = selectedTab == 3,
+                                onClick = { selectedTab = 3 },
+                                icon = { Icon(Icons.Default.Notifications, "Activity") },
+                                label = { Text("Activity") },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = com.splitezapp.ui.theme.PrimaryLight,
+                                    selectedTextColor = com.splitezapp.ui.theme.PrimaryLight,
+                                    unselectedIconColor = com.splitezapp.ui.theme.Muted,
+                                    unselectedTextColor = com.splitezapp.ui.theme.Muted,
+                                    indicatorColor = Color.Transparent
+                                )
+                            )
+                            NavigationBarItem(
+                                selected = selectedTab == 4,
+                                onClick = { selectedTab = 4 },
+                                icon = { Icon(Icons.Default.MoreHoriz, "More") },
+                                label = { Text("More") },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = com.splitezapp.ui.theme.PrimaryLight,
+                                    selectedTextColor = com.splitezapp.ui.theme.PrimaryLight,
+                                    unselectedIconColor = com.splitezapp.ui.theme.Muted,
+                                    unselectedTextColor = com.splitezapp.ui.theme.Muted,
+                                    indicatorColor = Color.Transparent
+                                )
+                            )
+                        }
+                        // Floating Add button
+                        FloatingActionButton(
+                            onClick = { showAddExpense = true },
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .offset(y = (-16).dp)
+                                .size(52.dp),
+                            shape = CircleShape,
+                            containerColor = com.splitezapp.ui.theme.Primary,
+                            contentColor = Color.White,
+                            elevation = FloatingActionButtonDefaults.elevation(
+                                defaultElevation = 6.dp
+                            )
+                        ) {
+                            Icon(Icons.Default.Add, "Add expense", modifier = Modifier.size(28.dp))
+                        }
                     }
                 }
             ) { padding ->
@@ -151,10 +209,9 @@ fun MainScreen(authVM: AuthViewModel) {
                     1 -> GroupsScreen(
                         onGroupTap = { navDest = NavDestination.GroupDetail(it) }
                     )
-                    2 -> TripsScreen(
+                    3 -> TripsScreen(
                         onTripTap = { navDest = NavDestination.TripDetail(it) }
                     )
-                    3 -> FinancesScreen()
                     4 -> SettingsScreen(
                         user = authVM.currentUser,
                         onLogout = { authVM.logout() },
