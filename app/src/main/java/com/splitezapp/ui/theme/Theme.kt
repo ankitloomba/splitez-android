@@ -6,21 +6,22 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-// Core palette — aligned with design spec
-val Primary = Color(0xFF4338CA)        // Indigo
-val PrimaryLight = Color(0xFFC7D2FE)   // Light indigo
-val DarkBg = Color(0xFF10142A)         // Deep navy header
-val Positive = Color(0xFF4ADE80)       // Green
-val Negative = Color(0xFFDC2626)       // Red
-val Accent = Color(0xFFEEF0FF)         // Tinted surface
-val Muted = Color(0xFF8792A8)          // Inactive/secondary
-val Surface = Color(0xFFF1F5F9)
-val OnSurface = Color(0xFF1A1A1A)
-val BalanceGreen = Color(0xFF16A34A)
-val TextSecondary = Color(0xFF64748B)
-val Divider = Color(0xFFEEF0F4)
-val PillActive = Color(0xFF4338CA)
-val PillInactive = Color(0xFFF1F5F9)
+// Core palette — aligned with artifact design
+val Primary = Color(0xFF3890F5)        // Blue
+val PrimaryLight = Color(0xFF5BA8F7)   // Light blue
+val DarkBg = Color(0xFF1A2235)         // Dark surface
+val Positive = Color(0xFF2EC770)       // Green
+val Negative = Color(0xFFEB5757)       // Red
+val Accent = Color(0xFF22D4A6)         // Teal
+val Muted = Color(0xFF5A6B82)          // Inactive/secondary
+val Surface = Color(0xFFF5F7FA)
+val OnSurface = Color(0xFF1A2233)
+val TextSecondary = Color(0xFF5A6B82)
+val TextTertiary = Color(0xFF8D9BB0)
+val Divider = Color(0xFFD8E0EB)
+val PillActive = Color(0xFF3890F5)
+val PillInactive = Color(0xFFE8EDF4)
+val SurfaceAlt = Color(0xFFEDF1F7)
 
 private val LightColorScheme = lightColorScheme(
     primary = Primary,

@@ -16,12 +16,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.splitezapp.data.api.ApiClient
@@ -47,98 +43,81 @@ fun HomeScreen(user: UserProfile?) {
 
     val totalOwed = balances.filter { it.amount > 0 }.sumOf { it.amount }
 
+    val totalYouOwe = balances.filter { it.amount < 0 }.sumOf { kotlin.math.abs(it.amount) }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBg)
+            .background(Surface)
     ) {
-        // Dark header
+        // Light header
         item {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(DarkBg)
                     .padding(horizontal = 20.dp)
-                    .padding(top = 48.dp, bottom = 32.dp)
+                    .padding(top = 48.dp, bottom = 16.dp)
             ) {
-                // Top bar: logo + icons
+                // Top bar
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        buildAnnotatedString {
-                            withStyle(SpanStyle(color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)) {
-                                append("Split")
-                            }
-                            withStyle(SpanStyle(color = PrimaryLight, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)) {
-                                append("EZ")
-                            }
-                        }
+                        "Home",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = OnSurface
                     )
-                    Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                        Icon(Icons.Default.Search, contentDescription = "Search", tint = PrimaryLight)
-                        Icon(Icons.Default.Settings, contentDescription = "Settings", tint = PrimaryLight)
-                    }
+                    Icon(Icons.Default.Notifications, contentDescription = "Notifications", tint = Primary)
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-                Text(
-                    "Overall, you are owed",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Muted
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(verticalAlignment = Alignment.Bottom) {
-                    Text(
-                        formatAmount(totalOwed),
-                        fontSize = 36.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Positive
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        "INR ▾",
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = Muted,
-                        modifier = Modifier.padding(bottom = 6.dp)
-                    )
+                // Balance card
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            "Net Balance",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = TextSecondary
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            formatAmount(totalOwed),
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Positive
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                            Column {
+                                Text("You owe", style = MaterialTheme.typography.labelSmall, color = TextSecondary)
+                                Text(formatAmount(totalYouOwe), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), color = Negative)
+                            }
+                            Column {
+                                Text("Owed to you", style = MaterialTheme.typography.labelSmall, color = TextSecondary)
+                                Text(formatAmount(totalOwed), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), color = Positive)
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        // White card area
+        // Content area
         item {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .offset(y = (-20).dp)
-                    .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(Surface)
             ) {
-                // Filter pills
-                Row(
-                    modifier = Modifier
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 20.dp, vertical = 14.dp),
-                    horizontalArrangement = Arrangement.spacedBy(7.dp)
-                ) {
-                    filters.forEach { filter ->
-                        Text(
-                            filter,
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                            color = if (filter == activeFilter) Color.White else TextSecondary,
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .background(if (filter == activeFilter) PillActive else PillInactive)
-                                .clickable { activeFilter = filter }
-                                .padding(horizontal = 13.dp, vertical = 7.dp)
-                        )
-                    }
-                }
-
                 // Dashboard Elements
                 dashboardElements.forEach { element ->
                     DashboardElementCard(element)
@@ -148,15 +127,39 @@ fun HomeScreen(user: UserProfile?) {
                 // Ad banner
                 AdBannerSlot(screen = "home", placementName = "home_banner")
 
-                // Groups & trips header
+                // Recent Activity header
+                Text(
+                    "Recent Activity",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .padding(top = 8.dp, bottom = 8.dp)
+                )
+
+                if (activities.isEmpty()) {
+                    Text(
+                        "No recent activity",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+                } else {
+                    activities.forEach { activity ->
+                        ActivityRow(activity)
+                    }
+                }
+
+                // Balances header
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 10.dp),
+                        .padding(horizontal = 20.dp)
+                        .padding(top = 16.dp, bottom = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        "Groups & trips",
+                        "Balances",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold
                     )
@@ -167,7 +170,6 @@ fun HomeScreen(user: UserProfile?) {
                     )
                 }
 
-                // Balances
                 if (balances.isEmpty()) {
                     Text(
                         "No outstanding balances",
@@ -182,29 +184,6 @@ fun HomeScreen(user: UserProfile?) {
                             modifier = Modifier.padding(start = 70.dp),
                             color = Divider
                         )
-                    }
-                }
-
-                // Recent activity header
-                Text(
-                    "Recent Activity",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .padding(top = 16.dp, bottom = 8.dp)
-                )
-
-                if (activities.isEmpty()) {
-                    Text(
-                        "No recent activity",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(horizontal = 20.dp)
-                    )
-                } else {
-                    activities.forEach { activity ->
-                        ActivityRow(activity)
                     }
                 }
 
