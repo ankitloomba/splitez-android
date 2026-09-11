@@ -1,22 +1,25 @@
 package com.splitezapp.ui.auth
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.sp
+import com.splitezapp.ui.theme.Accent
 import com.splitezapp.ui.theme.Negative
 import com.splitezapp.ui.theme.Positive
 import com.splitezapp.ui.theme.Primary
@@ -40,12 +43,23 @@ fun LoginScreen(
     ) {
         Spacer(modifier = Modifier.height(60.dp))
 
-        Icon(
-            Icons.Default.AttachMoney,
-            contentDescription = null,
-            tint = Primary,
-            modifier = Modifier.size(64.dp)
-        )
+        // Gradient logo mark
+        Box(
+            modifier = Modifier
+                .size(72.dp)
+                .clip(RoundedCornerShape(18.dp))
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(Primary, Accent),
+                        start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                        end = androidx.compose.ui.geometry.Offset(Float.MAX_VALUE, Float.MAX_VALUE)
+                    )
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("S₹", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
         Text("SplitEZ", style = MaterialTheme.typography.headlineLarge)
         Text("Split expenses with ease", style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant)
