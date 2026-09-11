@@ -1,28 +1,133 @@
 package com.splitezapp.ui.auth
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.splitezapp.ui.theme.Accent
-import com.splitezapp.ui.theme.Negative
-import com.splitezapp.ui.theme.Positive
-import com.splitezapp.ui.theme.Primary
+import com.splitezapp.ui.theme.*
+
+// Split circle logo: light indigo left (#818CF8), deep indigo right (#4338CA)
+@Composable
+fun SplitEZLogo(size: Int = 64) {
+    val lightIndigo = Color(0xFF818CF8)
+    val deepIndigo = Color(0xFF4338CA)
+    val dividerColor = DarkBg
+
+    Canvas(modifier = Modifier.size(size.dp)) {
+        val center = Offset(this.size.width / 2, this.size.height / 2)
+        val radius = this.size.minDimension / 2
+
+        // Left half — light indigo
+        drawArc(
+            color = lightIndigo,
+            startAngle = 90f,
+            sweepAngle = 180f,
+            useCenter = true,
+            topLeft = Offset(center.x - radius, center.y - radius),
+            size = Size(radius * 2, radius * 2)
+        )
+
+        // Right half — deep indigo
+        drawArc(
+            color = deepIndigo,
+            startAngle = 270f,
+            sweepAngle = 180f,
+            useCenter = true,
+            topLeft = Offset(center.x - radius, center.y - radius),
+            size = Size(radius * 2, radius * 2)
+        )
+
+        // Diagonal divider line
+        rotate(degrees = -5f, pivot = center) {
+            drawRect(
+                color = dividerColor,
+                topLeft = Offset(center.x - 1.dp.toPx(), 0f),
+                size = Size(2.dp.toPx(), this.size.height)
+            )
+        }
+    }
+}
+
+@Composable
+private fun LabeledField(label: String, content: @Composable () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp
+            ),
+            color = Primary
+        )
+        content()
+    }
+}
+
+@Composable
+private fun SocialButtons() {
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+        OutlinedButton(
+            onClick = { },
+            modifier = Modifier.weight(1f),
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Text("G", fontWeight = FontWeight.Bold, color = Color(0xFFDB4437))
+            Spacer(Modifier.width(6.dp))
+            Text("Google")
+        }
+        OutlinedButton(
+            onClick = { },
+            modifier = Modifier.weight(1f),
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Text("", fontSize = 16.sp) // Apple logo placeholder
+            Spacer(Modifier.width(6.dp))
+            Text("Apple")
+        }
+    }
+}
+
+@Composable
+private fun OrDivider() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        HorizontalDivider(modifier = Modifier.weight(1f))
+        Text("OR", style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.outline,
+            modifier = Modifier.padding(horizontal = 12.dp))
+        HorizontalDivider(modifier = Modifier.weight(1f))
+    }
+}
+
+// MARK: - Login Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,85 +137,123 @@ fun LoginScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showPassword by remember { mutableStateOf(false) }
     var showForgotDialog by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(60.dp))
-
-        // Gradient logo mark
-        Box(
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Dark header
+        Column(
             modifier = Modifier
-                .size(72.dp)
-                .clip(RoundedCornerShape(18.dp))
-                .background(
-                    Brush.linearGradient(
-                        colors = listOf(Primary, Accent),
-                        start = androidx.compose.ui.geometry.Offset(0f, 0f),
-                        end = androidx.compose.ui.geometry.Offset(Float.MAX_VALUE, Float.MAX_VALUE)
-                    )
-                ),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .background(DarkBg)
+                .padding(horizontal = 28.dp)
+                .padding(top = 48.dp, bottom = 32.dp)
         ) {
-            Text("S₹", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SplitEZLogo(size = 28)
+                Text("SplitEZ", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("Welcome back", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text("Sign in to manage your shared expenses", color = Color.White.copy(alpha = 0.6f), fontSize = 14.sp)
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("SplitEZ", style = MaterialTheme.typography.headlineLarge)
-        Text("Split expenses with ease", style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-        Spacer(modifier = Modifier.height(40.dp))
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        viewModel.error?.let {
+        // White card area
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .verticalScroll(rememberScrollState())
+                .padding(28.dp)
+        ) {
             Spacer(modifier = Modifier.height(8.dp))
-            Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
-        }
 
-        Spacer(modifier = Modifier.height(20.dp))
+            // Email
+            LabeledField("EMAIL") {
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    placeholder = { Text("you@email.com") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(10.dp)
+                )
+            }
 
-        Button(
-            onClick = { viewModel.login(email, password) },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = email.isNotEmpty() && password.isNotEmpty() && !viewModel.isLoading
-        ) {
-            if (viewModel.isLoading) CircularProgressIndicator(modifier = Modifier.size(20.dp))
-            else Text("Log In")
-        }
+            Spacer(modifier = Modifier.height(20.dp))
 
-        TextButton(onClick = { showForgotDialog = true }) {
-            Text("Forgot Password?")
-        }
+            // Password
+            LabeledField("PASSWORD") {
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    placeholder = { Text("••••••••") },
+                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    trailingIcon = {
+                        IconButton(onClick = { showPassword = !showPassword }) {
+                            Icon(
+                                if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = "Toggle password",
+                                tint = Color.Gray
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(10.dp)
+                )
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    TextButton(onClick = { showForgotDialog = true }) {
+                        Text("Forgot password?", color = Primary, fontSize = 12.sp)
+                    }
+                }
+            }
 
-        Divider(modifier = Modifier.padding(vertical = 16.dp))
+            viewModel.error?.let {
+                Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                Spacer(modifier = Modifier.height(8.dp))
+            }
 
-        OutlinedButton(onClick = onNavigateToRegister, modifier = Modifier.fillMaxWidth()) {
-            Text("Create Account")
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Sign In button (pill)
+            Button(
+                onClick = { viewModel.login(email, password) },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                enabled = email.isNotEmpty() && password.isNotEmpty() && !viewModel.isLoading
+            ) {
+                if (viewModel.isLoading) CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
+                else Text("Sign In", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+            OrDivider()
+            Spacer(modifier = Modifier.height(20.dp))
+
+            SocialButtons()
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Sign up link
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text("Don't have an account? ", color = MaterialTheme.colorScheme.outline, fontSize = 14.sp)
+                Text(
+                    "Sign Up",
+                    color = Primary,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    modifier = Modifier.clickable { onNavigateToRegister() }
+                )
+            }
         }
     }
 
@@ -152,42 +295,123 @@ fun LoginScreen(
     }
 }
 
+// MARK: - Register Screen
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     viewModel: AuthViewModel,
     onBack: () -> Unit
 ) {
+    var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
+    var showPassword by remember { mutableStateOf(false) }
+    var agreedToTerms by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Create Account") })
-        }
-    ) { padding ->
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Dark header
         Column(
             modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(32.dp)
+                .fillMaxWidth()
+                .background(DarkBg)
+                .padding(horizontal = 28.dp)
+                .padding(top = 48.dp, bottom = 32.dp)
         ) {
-            OutlinedTextField(value = firstName, onValueChange = { firstName = it },
-                label = { Text("First Name") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-            Spacer(modifier = Modifier.height(12.dp))
-            OutlinedTextField(value = lastName, onValueChange = { lastName = it },
-                label = { Text("Last Name (optional)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-            Spacer(modifier = Modifier.height(12.dp))
-            OutlinedTextField(value = email, onValueChange = { email = it },
-                label = { Text("Email") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                modifier = Modifier.fillMaxWidth(), singleLine = true)
-            Spacer(modifier = Modifier.height(12.dp))
-            OutlinedTextField(value = password, onValueChange = { password = it },
-                label = { Text("Password (min 8 chars)") }, visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth(), singleLine = true)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { onBack() }
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Back", color = Color.White, fontSize = 14.sp)
+                }
+                SplitEZLogo(size = 28)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("Create account", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text("Start splitting expenses in seconds", color = Color.White.copy(alpha = 0.6f), fontSize = 14.sp)
+        }
+
+        // White card
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .verticalScroll(rememberScrollState())
+                .padding(28.dp)
+        ) {
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Full Name
+            LabeledField("FULL NAME") {
+                OutlinedTextField(
+                    value = fullName, onValueChange = { fullName = it },
+                    placeholder = { Text("Enter your name") },
+                    modifier = Modifier.fillMaxWidth(), singleLine = true,
+                    shape = RoundedCornerShape(10.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // Email
+            LabeledField("EMAIL") {
+                OutlinedTextField(
+                    value = email, onValueChange = { email = it },
+                    placeholder = { Text("you@email.com") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    modifier = Modifier.fillMaxWidth(), singleLine = true,
+                    shape = RoundedCornerShape(10.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // Phone
+            LabeledField("PHONE") {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = "🇮🇳 +91", onValueChange = { },
+                        readOnly = true,
+                        modifier = Modifier.width(90.dp), singleLine = true,
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                    OutlinedTextField(
+                        value = phone, onValueChange = { phone = it },
+                        placeholder = { Text("Phone number") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                        modifier = Modifier.weight(1f), singleLine = true,
+                        shape = RoundedCornerShape(10.dp)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // Password
+            LabeledField("PASSWORD") {
+                OutlinedTextField(
+                    value = password, onValueChange = { password = it },
+                    placeholder = { Text("Create a password") },
+                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { showPassword = !showPassword }) {
+                            Icon(
+                                if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = "Toggle", tint = Color.Gray
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(), singleLine = true,
+                    shape = RoundedCornerShape(10.dp)
+                )
+            }
 
             if (password.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -199,16 +423,49 @@ fun RegisterScreen(
                 Text(it, color = MaterialTheme.colorScheme.error)
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = { viewModel.register(email, password, firstName, lastName.ifEmpty { null }) },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = firstName.isNotEmpty() && email.isNotEmpty() && password.length >= 8 && !viewModel.isLoading
+            // Terms checkbox
+            Row(
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                if (viewModel.isLoading) CircularProgressIndicator(modifier = Modifier.size(20.dp))
-                else Text("Sign Up")
+                Checkbox(
+                    checked = agreedToTerms,
+                    onCheckedChange = { agreedToTerms = it },
+                    colors = CheckboxDefaults.colors(checkedColor = Primary),
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    "I agree to the Terms of Service and Privacy Policy",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline
+                )
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Create Account button (pill)
+            val firstName = fullName.split(" ").firstOrNull() ?: ""
+            val lastName = fullName.split(" ").drop(1).joinToString(" ").ifEmpty { null }
+            Button(
+                onClick = { viewModel.register(email, password, firstName, lastName) },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                enabled = fullName.isNotEmpty() && email.isNotEmpty() && password.length >= 8 && agreedToTerms && !viewModel.isLoading
+            ) {
+                if (viewModel.isLoading) CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
+                else Text("Create Account", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+            OrDivider()
+            Spacer(modifier = Modifier.height(20.dp))
+
+            SocialButtons()
+
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
@@ -244,46 +501,25 @@ private fun PasswordStrengthIndicator(password: String) {
     val color = strength.color()
 
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        // Strength bar
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(6.dp)
-                .clip(RoundedCornerShape(3.dp))
+                .height(4.dp)
+                .clip(RoundedCornerShape(2.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(strength.fraction)
                     .fillMaxHeight()
-                    .clip(RoundedCornerShape(3.dp))
+                    .clip(RoundedCornerShape(2.dp))
                     .background(color)
             )
         }
-
-        Text(strength.label, style = MaterialTheme.typography.labelSmall, color = color)
-
-        // Rules
-        PasswordRule("At least 8 characters", password.length >= 8)
-        PasswordRule("Uppercase letter", password.any { it.isUpperCase() })
-        PasswordRule("Lowercase letter", password.any { it.isLowerCase() })
-        PasswordRule("Number", password.any { it.isDigit() })
-        PasswordRule("Special character", password.any { !it.isLetterOrDigit() })
-    }
-}
-
-@Composable
-private fun PasswordRule(text: String, met: Boolean) {
-    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            if (met) "✓" else "○",
+            "Use 8+ characters with a mix of letters & numbers",
             style = MaterialTheme.typography.labelSmall,
-            color = if (met) Positive else MaterialTheme.colorScheme.outline
-        )
-        Text(
-            text,
-            style = MaterialTheme.typography.labelSmall,
-            color = if (met) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
+            color = Primary
         )
     }
 }
