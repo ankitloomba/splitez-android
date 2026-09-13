@@ -62,8 +62,8 @@ fun SplitEZLogo(size: Int = 64) {
         )
 
         // White diagonal divider line
-        val dividerWidth = radius * 0.12f
-        rotate(degrees = -7f, pivot = center) {
+        val dividerWidth = radius * 0.08f
+        rotate(degrees = -3f, pivot = center) {
             drawRect(
                 color = Color.White,
                 topLeft = Offset(center.x - dividerWidth / 2, -2.dp.toPx()),
