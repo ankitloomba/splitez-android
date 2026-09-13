@@ -20,6 +20,8 @@ class AuthViewModel : ViewModel() {
         private set
     var error by mutableStateOf<String?>(null)
         private set
+    var needsEmailVerification by mutableStateOf(false)
+        private set
 
     fun checkAuth() {
         if (!ApiClient.isLoggedIn) return
@@ -53,13 +55,18 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             isLoading = true
             error = null
+            needsEmailVerification = false
             try {
-                val tokens = ApiClient.api.register(
+                val resp = ApiClient.api.register(
                     RegisterRequest(email, password, firstName, lastName)
                 )
-                ApiClient.setTokens(tokens.accessToken, tokens.refreshToken)
-                currentUser = ApiClient.api.getMe()
-                isLoggedIn = true
+                if (resp.needsVerification) {
+                    needsEmailVerification = true
+                } else {
+                    ApiClient.setTokens(resp.accessToken!!, resp.refreshToken!!)
+                    currentUser = ApiClient.api.getMe()
+                    isLoggedIn = true
+                }
             } catch (e: Exception) {
                 error = e.message ?: "Registration failed"
             }

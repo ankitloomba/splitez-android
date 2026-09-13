@@ -12,6 +12,16 @@ data class AuthTokens(
     val user: UserSummary?
 )
 
+/** Registration may return tokens (auto-verified) or a message (needs email verification) */
+data class RegisterResponse(
+    val accessToken: String? = null,
+    val refreshToken: String? = null,
+    val message: String? = null,
+    val user: UserSummary? = null
+) {
+    val needsVerification: Boolean get() = accessToken == null
+}
+
 data class RegisterRequest(
     val email: String,
     val password: String,

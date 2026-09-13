@@ -6,7 +6,7 @@ import retrofit2.http.*
 interface ApiService {
     // Auth
     @POST("auth/register")
-    suspend fun register(@Body req: RegisterRequest): AuthTokens
+    suspend fun register(@Body req: RegisterRequest): RegisterResponse
 
     @POST("auth/login")
     suspend fun login(@Body req: LoginRequest): AuthTokens
