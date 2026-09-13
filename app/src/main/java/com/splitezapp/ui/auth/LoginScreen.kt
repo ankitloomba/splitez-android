@@ -21,8 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -37,9 +40,13 @@ import com.splitezapp.ui.theme.*
 fun SplitEZLogo(size: Int = 64) {
     val lightIndigo = Color(0xFF818CF8)
     val deepIndigo = Color(0xFF4338CA)
-    Canvas(modifier = Modifier.size(size.dp)) {
+    Canvas(modifier = Modifier
+        .size(size.dp)
+        .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+    ) {
         val center = Offset(this.size.width / 2, this.size.height / 2)
         val radius = this.size.minDimension / 2
+        val halfGap = radius * 0.04f  // half the transparent divider width
 
         // Left half — light indigo
         drawArc(
@@ -61,13 +68,13 @@ fun SplitEZLogo(size: Int = 64) {
             size = Size(radius * 2, radius * 2)
         )
 
-        // White diagonal divider line
-        val dividerWidth = radius * 0.08f
+        // Erase the divider gap to make it transparent
         rotate(degrees = -3f, pivot = center) {
             drawRect(
-                color = Color.White,
-                topLeft = Offset(center.x - dividerWidth / 2, -2.dp.toPx()),
-                size = Size(dividerWidth, this.size.height + 4.dp.toPx())
+                color = Color.Black,
+                topLeft = Offset(center.x - halfGap, -2.dp.toPx()),
+                size = Size(halfGap * 2, this.size.height + 4.dp.toPx()),
+                blendMode = BlendMode.Clear
             )
         }
     }
