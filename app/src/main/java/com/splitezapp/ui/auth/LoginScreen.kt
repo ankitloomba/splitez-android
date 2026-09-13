@@ -37,8 +37,6 @@ import com.splitezapp.ui.theme.*
 fun SplitEZLogo(size: Int = 64) {
     val lightIndigo = Color(0xFF818CF8)
     val deepIndigo = Color(0xFF4338CA)
-    val dividerColor = DarkBg
-
     Canvas(modifier = Modifier.size(size.dp)) {
         val center = Offset(this.size.width / 2, this.size.height / 2)
         val radius = this.size.minDimension / 2
@@ -63,12 +61,13 @@ fun SplitEZLogo(size: Int = 64) {
             size = Size(radius * 2, radius * 2)
         )
 
-        // Diagonal divider line
-        rotate(degrees = -5f, pivot = center) {
+        // White diagonal divider line
+        val dividerWidth = radius * 0.12f
+        rotate(degrees = -7f, pivot = center) {
             drawRect(
-                color = dividerColor,
-                topLeft = Offset(center.x - 1.dp.toPx(), 0f),
-                size = Size(2.dp.toPx(), this.size.height)
+                color = Color.White,
+                topLeft = Offset(center.x - dividerWidth / 2, -2.dp.toPx()),
+                size = Size(dividerWidth, this.size.height + 4.dp.toPx())
             )
         }
     }
