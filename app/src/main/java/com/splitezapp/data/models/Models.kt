@@ -70,6 +70,31 @@ data class UpdateUserRequest(
     val profilePicture: String? = null
 )
 
+// ── Friends ─────────────────────────────────────────────────────────────
+data class Friend(
+    val id: String,
+    val firstName: String,
+    val lastName: String? = null,
+    val phone: String? = null,
+    val email: String? = null,
+    val profilePicture: String? = null,
+    val avatar: AvatarData? = null,
+    val isRegistered: Boolean = false,
+    val groupCount: Int? = null,
+    val lastActiveAt: String? = null
+) {
+    val displayName: String get() = listOfNotNull(firstName, lastName).joinToString(" ")
+    fun toUserSummary() = UserSummary(id = id, firstName = firstName, lastName = lastName, profilePicture = profilePicture, avatar = avatar)
+}
+
+data class FriendRequest(
+    val id: String,
+    val fromUser: UserSummary,
+    val status: String,
+    val source: String? = null,
+    val createdAt: String? = null
+)
+
 // ── Groups ──────────────────────────────────────────────────────────────
 data class Group(
     val id: String,
