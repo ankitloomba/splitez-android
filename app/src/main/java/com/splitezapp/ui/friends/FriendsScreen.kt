@@ -25,11 +25,17 @@ import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FriendsScreen(onFriendTap: (Friend) -> Unit) {
+fun FriendsScreen(
+    onFriendTap: (Friend) -> Unit,
+    onNotifications: () -> Unit = {},
+    onMenuNavigate: (com.splitezapp.NavDestination) -> Unit = {},
+    onLogout: () -> Unit = {}
+) {
     val friends = remember { SampleData.friends }
     var searchText by remember { mutableStateOf("") }
     var sortOption by remember { mutableStateOf("name") }
     var showSortMenu by remember { mutableStateOf(false) }
+    var showOverflowMenu by remember { mutableStateOf(false) }
 
     val filteredFriends = remember(searchText, sortOption) {
         var result = friends.toList()
@@ -57,11 +63,41 @@ fun FriendsScreen(onFriendTap: (Friend) -> Unit) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Friends", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.weight(1f))
-                IconButton(onClick = {}) {
-                    Icon(Icons.Default.QrCode, "QR", tint = Color.White)
+                IconButton(onClick = onNotifications) {
+                    Icon(Icons.Default.Notifications, "Notifications", tint = Color.White)
                 }
-                IconButton(onClick = {}) {
-                    Icon(Icons.Default.PersonAdd, "Add friend", tint = Color.White)
+                Box {
+                    IconButton(onClick = { showOverflowMenu = true }) {
+                        Icon(Icons.Default.MoreVert, "Menu", tint = Color.White)
+                    }
+                    DropdownMenu(expanded = showOverflowMenu, onDismissRequest = { showOverflowMenu = false }) {
+                        DropdownMenuItem(
+                            text = { Text("Account") },
+                            onClick = { showOverflowMenu = false; onMenuNavigate(com.splitezapp.NavDestination.Account) },
+                            leadingIcon = { Icon(Icons.Default.Person, null) }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Security") },
+                            onClick = { showOverflowMenu = false; onMenuNavigate(com.splitezapp.NavDestination.Security) },
+                            leadingIcon = { Icon(Icons.Default.Security, null) }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Export data") },
+                            onClick = { showOverflowMenu = false; onMenuNavigate(com.splitezapp.NavDestination.Export) },
+                            leadingIcon = { Icon(Icons.Default.FileUpload, null) }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Import data") },
+                            onClick = { showOverflowMenu = false; onMenuNavigate(com.splitezapp.NavDestination.Import) },
+                            leadingIcon = { Icon(Icons.Default.FileDownload, null) }
+                        )
+                        HorizontalDivider()
+                        DropdownMenuItem(
+                            text = { Text("Log out", color = com.splitezapp.ui.theme.Negative) },
+                            onClick = { showOverflowMenu = false; onLogout() },
+                            leadingIcon = { Icon(Icons.Default.Logout, null, tint = com.splitezapp.ui.theme.Negative) }
+                        )
+                    }
                 }
             }
 
