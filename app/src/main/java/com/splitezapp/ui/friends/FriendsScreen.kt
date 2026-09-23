@@ -72,6 +72,9 @@ fun FriendsScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Friends", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.weight(1f))
+                IconButton(onClick = { onMenuNavigate(com.splitezapp.NavDestination.Account) }) {
+                    Icon(Icons.Default.AccountCircle, "Account", tint = Color.White)
+                }
                 IconButton(onClick = onNotifications) {
                     Icon(Icons.Default.Notifications, "Notifications", tint = Color.White)
                 }
@@ -80,11 +83,6 @@ fun FriendsScreen(
                         Icon(Icons.Default.MoreVert, "Menu", tint = Color.White)
                     }
                     DropdownMenu(expanded = showOverflowMenu, onDismissRequest = { showOverflowMenu = false }) {
-                        DropdownMenuItem(
-                            text = { Text("Account") },
-                            onClick = { showOverflowMenu = false; onMenuNavigate(com.splitezapp.NavDestination.Account) },
-                            leadingIcon = { Icon(Icons.Default.Person, null) }
-                        )
                         DropdownMenuItem(
                             text = { Text("Security") },
                             onClick = { showOverflowMenu = false; onMenuNavigate(com.splitezapp.NavDestination.Security) },
