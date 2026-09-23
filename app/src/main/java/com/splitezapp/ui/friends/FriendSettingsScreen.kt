@@ -116,31 +116,39 @@ fun FriendSettingsScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 // Ad-free upgrade card
-                Surface(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 16.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFFFFF3E0)
+                        .padding(horizontal = 20.dp, vertical = 16.dp)
+                        .background(
+                            brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
+                                colors = listOf(Color(0xFF4D40B3), Color(0xFF7359D9))
+                            ),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .padding(16.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.Star, null, tint = Color(0xFFFF9800), modifier = Modifier.size(24.dp))
-                        Spacer(Modifier.width(12.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("Go Ad-Free", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                            Text("Remove ads · ₹99/mo", fontSize = 12.sp, color = TextSecondary)
+                            Text("Get SplitEZ Ad Free", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
+                            Spacer(Modifier.height(4.dp))
+                            Text("No ads · priority support · exports", fontSize = 12.sp, color = Color.White.copy(alpha = 0.7f))
                         }
-                        OutlinedButton(
-                            onClick = {},
-                            shape = RoundedCornerShape(20.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Primary),
-                            border = androidx.compose.foundation.BorderStroke(1.5.dp, Primary)
-                        ) {
-                            Text("Upgrade", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
-                        }
+                        Spacer(Modifier.width(12.dp))
+                        Text(
+                            "₹99/mo",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            color = Color.Black.copy(alpha = 0.8f),
+                            modifier = Modifier
+                                .background(
+                                    brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
+                                        colors = listOf(Color(0xFFF2BF4D), Color(0xFFD9A633))
+                                    ),
+                                    shape = RoundedCornerShape(20.dp)
+                                )
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
                     }
                 }
 
@@ -175,7 +183,8 @@ fun FriendSettingsScreen(
                                 color = Primary.copy(alpha = 0.12f)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
-                                    Text("🏠", fontSize = 18.sp)
+                                    val emojis = listOf("🏠", "🍽️", "✈️", "🎮", "🏢", "🎓", "⚽️", "🎵")
+                                    Text(emojis[abs(group.name.hashCode()) % emojis.size], fontSize = 18.sp)
                                 }
                             }
                             Spacer(Modifier.width(14.dp))
