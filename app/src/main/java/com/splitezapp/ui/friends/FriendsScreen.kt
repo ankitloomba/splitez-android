@@ -35,6 +35,7 @@ fun FriendsScreen(
 ) {
     val friends = remember { SampleData.friends }
     var searchText by remember { mutableStateOf("") }
+    var isSearchExpanded by remember { mutableStateOf(false) }
     var sortOption by remember { mutableStateOf("name") }
     var showSortMenu by remember { mutableStateOf(false) }
     var showOverflowMenu by remember { mutableStateOf(false) }
@@ -67,7 +68,7 @@ fun FriendsScreen(
                 .fillMaxWidth()
                 .background(DarkBg)
                 .padding(horizontal = 20.dp)
-                .padding(top = 48.dp, bottom = 24.dp)
+                .padding(top = 48.dp, bottom = 10.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Friends", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
@@ -75,8 +76,14 @@ fun FriendsScreen(
                 IconButton(onClick = { onMenuNavigate(com.splitezapp.NavDestination.Account) }) {
                     Icon(Icons.Default.AccountCircle, "Account", tint = Color.White)
                 }
-                IconButton(onClick = onNotifications) {
-                    Icon(Icons.Default.Notifications, "Notifications", tint = Color.White)
+                IconButton(onClick = { /* AI action */ }) {
+                    Icon(Icons.Default.AutoAwesome, "AI", tint = Color.White)
+                }
+                IconButton(onClick = { /* Add friend */ }) {
+                    Icon(Icons.Default.PersonAdd, "Add Friend", tint = Color.White)
+                }
+                IconButton(onClick = { isSearchExpanded = !isSearchExpanded; if (!isSearchExpanded) searchText = "" }) {
+                    Icon(Icons.Default.Search, "Search", tint = Color.White)
                 }
                 Box {
                     IconButton(onClick = { showOverflowMenu = true }) {
@@ -108,35 +115,34 @@ fun FriendsScreen(
                 }
             }
 
-            Spacer(Modifier.height(12.dp))
-
-            // Search bar
-            OutlinedTextField(
-                value = searchText,
-                onValueChange = { searchText = it },
-                placeholder = { Text("Search friends", color = TextTertiary) },
-                leadingIcon = { Icon(Icons.Default.Search, null, tint = TextTertiary) },
-                trailingIcon = {
-                    if (searchText.isNotEmpty()) {
-                        IconButton(onClick = { searchText = "" }) {
+            // Collapsible search bar
+            if (isSearchExpanded) {
+                Spacer(Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = searchText,
+                    onValueChange = { searchText = it },
+                    placeholder = { Text("Search friends", color = TextTertiary) },
+                    leadingIcon = { Icon(Icons.Default.Search, null, tint = TextTertiary) },
+                    trailingIcon = {
+                        IconButton(onClick = { isSearchExpanded = false; searchText = "" }) {
                             Icon(Icons.Default.Close, null, tint = TextTertiary)
                         }
-                    }
-                },
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedBorderColor = Color.White.copy(alpha = 0.2f),
-                    unfocusedBorderColor = Color.White.copy(alpha = 0.1f),
-                    focusedContainerColor = Color.White.copy(alpha = 0.1f),
-                    unfocusedContainerColor = Color.White.copy(alpha = 0.1f),
-                ),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            )
+                    },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedBorderColor = Color.White.copy(alpha = 0.2f),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.1f),
+                        focusedContainerColor = Color.White.copy(alpha = 0.1f),
+                        unfocusedContainerColor = Color.White.copy(alpha = 0.1f),
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(10.dp))
 
             // Filter pills – liquid glass style
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -179,7 +185,7 @@ fun FriendsScreen(
             Column {
                 // Header row
                 Row(
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("All friends", fontWeight = FontWeight.Bold, fontSize = 16.sp)
