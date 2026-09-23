@@ -38,6 +38,7 @@ import com.splitezapp.ui.groups.GroupDetailScreen
 import com.splitezapp.ui.groups.GroupsScreen
 import com.splitezapp.ui.imports.ImportScreen
 import com.splitezapp.ui.notifications.NotificationsScreen
+import com.splitezapp.ui.settings.SecurityScreen
 import com.splitezapp.ui.settings.SettingsScreen
 import com.splitezapp.ui.theme.*
 import com.splitezapp.data.analytics.AnalyticsTracker
@@ -84,6 +85,7 @@ sealed class NavDestination {
     data class GroupDetail(val groupId: String) : NavDestination()
     data class FriendLedger(val friendId: String) : NavDestination()
     data class AddExpense(val prefillFriendId: String? = null, val editExpenseId: String? = null) : NavDestination()
+    data object Security : NavDestination()
     data object Notifications : NavDestination()
     data object Export : NavDestination()
     data object Import : NavDestination()
@@ -139,6 +141,9 @@ fun MainScreen(authVM: AuthViewModel) {
                 editExpense = editExpense
             )
         }
+        is NavDestination.Security -> SecurityScreen(
+            onBack = { navDest = NavDestination.Tabs }
+        )
         is NavDestination.Notifications -> NotificationsScreen(
             onBack = { navDest = NavDestination.Tabs }
         )
@@ -307,6 +312,9 @@ private fun MoreOverlay(
 
                 MoreMenuItem(Icons.Default.Notifications, "Notifications") {
                     onNavigate(NavDestination.Notifications)
+                }
+                MoreMenuItem(Icons.Default.Security, "Security") {
+                    onNavigate(NavDestination.Security)
                 }
                 MoreMenuItem(Icons.Default.FileUpload, "Export data") {
                     onNavigate(NavDestination.Export)
