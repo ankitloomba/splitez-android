@@ -140,20 +140,33 @@ fun FriendsScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            // Filter pills
+            // Filter pills – liquid glass style
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(filterOptions) { option ->
+                    val isSelected = activeFilter == option
                     FilterChip(
-                        selected = activeFilter == option,
+                        selected = isSelected,
                         onClick = { activeFilter = option },
-                        label = { Text(option, fontSize = 14.sp) },
+                        label = {
+                            Text(
+                                option, fontSize = 14.sp,
+                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                            )
+                        },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = Primary,
+                            selectedContainerColor = Color(0xCC3366E6),
                             selectedLabelColor = Color.White,
                             containerColor = Color.White.copy(alpha = 0.12f),
-                            labelColor = Color.White.copy(alpha = 0.7f)
+                            labelColor = Color.White.copy(alpha = 0.65f)
                         ),
-                        border = null
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = isSelected,
+                            borderColor = Color.White.copy(alpha = 0.15f),
+                            selectedBorderColor = Color.White.copy(alpha = 0.35f),
+                            borderWidth = 0.5.dp,
+                            selectedBorderWidth = 0.5.dp
+                        )
                     )
                 }
             }
