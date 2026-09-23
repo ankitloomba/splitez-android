@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,13 +38,20 @@ fun FriendsScreen(
     var sortOption by remember { mutableStateOf("name") }
     var showSortMenu by remember { mutableStateOf(false) }
     var showOverflowMenu by remember { mutableStateOf(false) }
+    var activeFilter by remember { mutableStateOf("All") }
+    val filterOptions = listOf("All", "Owes you", "You owe", "Settled")
 
-    val filteredFriends = remember(searchText, sortOption) {
+    val filteredFriends = remember(searchText, sortOption, activeFilter) {
         var result = friends.toList()
         if (searchText.isNotEmpty()) {
             result = result.filter {
                 it.displayName.contains(searchText, ignoreCase = true)
             }
+        }
+        when (activeFilter) {
+            "Owes you" -> result = result.filter { ExpenseStore.balanceForUser(it.id) > 0 }
+            "You owe" -> result = result.filter { ExpenseStore.balanceForUser(it.id) < 0 }
+            "Settled" -> result = result.filter { ExpenseStore.balanceForUser(it.id) == 0 }
         }
         when (sortOption) {
             "balance" -> result.sortedByDescending { abs(ExpenseStore.balanceForUser(it.id)) }
@@ -128,6 +137,26 @@ fun FriendsScreen(
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(Modifier.height(12.dp))
+
+            // Filter pills
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(filterOptions) { option ->
+                    FilterChip(
+                        selected = activeFilter == option,
+                        onClick = { activeFilter = option },
+                        label = { Text(option, fontSize = 14.sp) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Primary,
+                            selectedLabelColor = Color.White,
+                            containerColor = Color.White.copy(alpha = 0.12f),
+                            labelColor = Color.White.copy(alpha = 0.7f)
+                        ),
+                        border = null
+                    )
+                }
+            }
         }
 
         // Content
