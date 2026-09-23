@@ -28,7 +28,8 @@ fun FriendLedgerScreen(
     friend: Friend,
     onBack: () -> Unit,
     onAddExpense: (Friend) -> Unit,
-    onExpenseTap: (Expense) -> Unit
+    onExpenseTap: (Expense) -> Unit,
+    onSettings: () -> Unit = {}
 ) {
     val storeBalance = ExpenseStore.balanceForUser(friend.id)
     val balance = storeBalance
@@ -62,8 +63,8 @@ fun FriendLedgerScreen(
                         Icon(Icons.Default.ArrowBack, "Back", tint = Color.White)
                     }
                     Spacer(Modifier.weight(1f))
-                    IconButton(onClick = {}) {
-                        Icon(Icons.Default.MoreVert, "More", tint = Color.White)
+                    IconButton(onClick = onSettings) {
+                        Icon(Icons.Default.Settings, "Settings", tint = Color.White)
                     }
                 }
 

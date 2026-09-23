@@ -22,6 +22,7 @@ import com.splitezapp.ui.activity.ActivityScreen
 import com.splitezapp.ui.exports.ExportScreen
 import com.splitezapp.ui.expenses.AddExpenseScreen
 import com.splitezapp.ui.friends.FriendLedgerScreen
+import com.splitezapp.ui.friends.FriendSettingsScreen
 import com.splitezapp.ui.friends.FriendsScreen
 import com.splitezapp.ui.groups.GroupDetailScreen
 import com.splitezapp.ui.groups.GroupsScreen
@@ -81,6 +82,7 @@ sealed class NavDestination {
     data object Notifications : NavDestination()
     data object Export : NavDestination()
     data object Import : NavDestination()
+    data class FriendSettings(val friendId: String) : NavDestination()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -115,7 +117,8 @@ fun MainScreen(authVM: AuthViewModel) {
                     },
                     onExpenseTap = { expense ->
                         navDest = NavDestination.AddExpense(editExpenseId = expense.id)
-                    }
+                    },
+                    onSettings = { navDest = NavDestination.FriendSettings(friend.id) }
                 )
             }
         }
@@ -155,6 +158,16 @@ fun MainScreen(authVM: AuthViewModel) {
         is NavDestination.Import -> ImportScreen(
             onBack = { navDest = NavDestination.Tabs }
         )
+        is NavDestination.FriendSettings -> {
+            val friend = SampleData.friends.find { it.id == dest.friendId }
+            if (friend != null) {
+                FriendSettingsScreen(
+                    friend = friend,
+                    onBack = { navDest = NavDestination.FriendLedger(friend.id) },
+                    onGroupTap = { navDest = NavDestination.GroupDetail(it) }
+                )
+            }
+        }
         is NavDestination.Tabs -> {
             Scaffold(
                 bottomBar = {
