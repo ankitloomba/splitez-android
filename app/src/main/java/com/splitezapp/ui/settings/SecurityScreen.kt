@@ -3,6 +3,8 @@ package com.splitezapp.ui.settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -67,7 +69,7 @@ fun SecurityScreen(onBack: () -> Unit) {
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
             color = Color.White
         ) {
-            Column(modifier = Modifier.padding(top = 8.dp)) {
+            Column(modifier = Modifier.padding(top = 8.dp).verticalScroll(rememberScrollState())) {
                 // Change password
                 SecurityRow(
                     icon = Icons.Default.Lock,
@@ -141,9 +143,7 @@ fun SecurityScreen(onBack: () -> Unit) {
                         .padding(horizontal = 20.dp),
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Negative),
-                    border = ButtonDefaults.outlinedButtonBorder(true).copy(
-                        brush = androidx.compose.ui.graphics.SolidColor(Negative)
-                    )
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Negative)
                 ) {
                     Text("Log out all other devices", fontWeight = FontWeight.SemiBold)
                 }
