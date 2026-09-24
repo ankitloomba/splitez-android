@@ -100,7 +100,7 @@ fun AddExpenseScreen(
             } else if (prefillFriend != null) {
                 setOf(SampleData.currentUser.id, prefillFriend.id)
             } else {
-                emptySet()
+                setOf(SampleData.currentUser.id)
             }
         )
     }
@@ -264,7 +264,9 @@ fun AddExpenseScreen(
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Paid by", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 Spacer(Modifier.height(8.dp))
-                for (user in participants) {
+                val paidByOptions = if (participants.any { it.id == SampleData.currentUser.id }) participants
+                    else listOf(SampleData.currentUser) + participants
+                for (user in paidByOptions) {
                     ListItem(
                         headlineContent = {
                             Text(if (user.id == SampleData.currentUser.id) "You" else user.displayName)
