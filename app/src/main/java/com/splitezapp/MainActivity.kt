@@ -186,21 +186,21 @@ fun MainScreen(authVM: AuthViewModel) {
                 containerColor = Color.White,
                 bottomBar = {
                     Column {
-                        Spacer(
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(12.dp)
+                                .height(8.dp)
                                 .background(
                                     brush = androidx.compose.ui.graphics.Brush.verticalGradient(
                                         colors = listOf(
-                                            Color.Transparent,
-                                            Color.Black.copy(alpha = 0.06f)
+                                            Color.Black.copy(alpha = 0f),
+                                            Color.Black.copy(alpha = 0.05f)
                                         )
                                     )
                                 )
                         )
                         Surface(
-                            color = Color.White.copy(alpha = 0.95f)
+                            color = Color.White
                         ) {
                         Row(
                             modifier = Modifier
