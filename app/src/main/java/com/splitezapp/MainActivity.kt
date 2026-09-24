@@ -4,14 +4,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.splitezapp.data.api.ApiClient
 import com.splitezapp.data.models.*
@@ -171,45 +178,66 @@ fun MainScreen(authVM: AuthViewModel) {
         is NavDestination.Tabs -> {
             Scaffold(
                 bottomBar = {
-                    NavigationBar(
-                        containerColor = Color.White,
-                        contentColor = Muted
+                    Surface(
+                        shadowElevation = 8.dp,
+                        color = Color.White.copy(alpha = 0.92f)
                     ) {
-                        val navColors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Primary,
-                            selectedTextColor = Primary,
-                            unselectedIconColor = Muted,
-                            unselectedTextColor = Muted,
-                            indicatorColor = Color.Transparent
-                        )
-                        NavigationBarItem(
-                            selected = selectedTab == 0,
-                            onClick = { selectedTab = 0 },
-                            icon = { Icon(Icons.Default.People, "Friends") },
-                            label = { Text("Friends") },
-                            colors = navColors
-                        )
-                        NavigationBarItem(
-                            selected = selectedTab == 1,
-                            onClick = { selectedTab = 1 },
-                            icon = { Icon(Icons.Default.Group, "Groups") },
-                            label = { Text("Groups") },
-                            colors = navColors
-                        )
-                        NavigationBarItem(
-                            selected = selectedTab == 2,
-                            onClick = { selectedTab = 2 },
-                            icon = { Icon(Icons.Default.Notifications, "Activity") },
-                            label = { Text("Activity") },
-                            colors = navColors
-                        )
-                        NavigationBarItem(
-                            selected = selectedTab == 3,
-                            onClick = { selectedTab = 3 },
-                            icon = { Icon(Icons.Default.AccountCircle, "Account") },
-                            label = { Text("Account") },
-                            colors = navColors
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp, vertical = 8.dp)
+                                .navigationBarsPadding(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            data class TabItem(val icon: androidx.compose.ui.graphics.vector.ImageVector, val label: String, val tag: Int)
+                            val tabs = listOf(
+                                TabItem(Icons.Default.People, "Friends", 0),
+                                TabItem(Icons.Default.Group, "Groups", 1),
+                                TabItem(Icons.Default.Notifications, "Activity", 2),
+                                TabItem(Icons.Default.AccountCircle, "Account", 3)
+                            )
+                            tabs.forEach { tab ->
+                                val isSelected = selectedTab == tab.tag
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .clickable { selectedTab = tab.tag }
+                                        .padding(vertical = 4.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        if (isSelected) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(width = 56.dp, height = 32.dp)
+                                                    .background(
+                                                        brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                                                            colors = listOf(
+                                                                Color(0xD93366E6),
+                                                                Color(0xB34D80FF)
+                                                            )
+                                                        ),
+                                                        shape = RoundedCornerShape(16.dp)
+                                                    )
+                                            )
+                                        }
+                                        Icon(
+                                            tab.icon, tab.label,
+                                            tint = if (isSelected) Color.White else Muted,
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                    }
+                                    Spacer(Modifier.height(2.dp))
+                                    Text(
+                                        tab.label,
+                                        fontSize = 10.sp,
+                                        fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
+                                        color = if (isSelected) Primary else Muted
+                                    )
+                                }
+                            }
+                        }
                     }
                 },
                 floatingActionButton = {
