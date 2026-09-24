@@ -60,6 +60,28 @@ object ExpenseStore {
         return balances.firstOrNull { it.userId == userId }?.amount ?: 0
     }
 
+    fun recordSettlement(friendId: String, amount: Int, method: String) {
+        val index = balances.indexOfFirst { it.userId == friendId }
+        if (index >= 0) {
+            val old = balances[index]
+            val newAmount = if (old.amount > 0) maxOf(0, old.amount - amount) else minOf(0, old.amount + amount)
+            balances[index] = Balance(userId = old.userId, user = old.user, amount = newAmount)
+        }
+
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        val activity = Activity(
+            id = "a_${UUID.randomUUID().toString().take(8)}",
+            type = "settlement_created",
+            entityType = "settlement",
+            entityId = "s_${UUID.randomUUID().toString().take(8)}",
+            metadata = mapOf("amount" to amount, "method" to method),
+            user = SampleData.currentUser,
+            createdAt = sdf.format(Date())
+        )
+        activities.add(0, activity)
+    }
+
     private fun updateBalance(userId: String, delta: Int) {
         val index = balances.indexOfFirst { it.userId == userId }
         if (index >= 0) {
