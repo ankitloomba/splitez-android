@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.sp
 import com.splitezapp.data.models.*
 import com.splitezapp.ui.components.AvatarView
 import com.splitezapp.ui.theme.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,6 +41,7 @@ fun FriendsScreen(
     var sortOption by remember { mutableStateOf("name") }
     var showSortMenu by remember { mutableStateOf(false) }
     var showOverflowMenu by remember { mutableStateOf(false) }
+    var showAddFriend by remember { mutableStateOf(false) }
     var activeFilter by remember { mutableStateOf("All") }
     val filterOptions = listOf("All", "Owes you", "You owe", "Settled")
 
@@ -76,7 +79,7 @@ fun FriendsScreen(
                 IconButton(onClick = { /* AI action */ }) {
                     Icon(Icons.Default.AutoAwesome, "AI", tint = Color.White)
                 }
-                IconButton(onClick = { /* Add friend */ }) {
+                IconButton(onClick = { showAddFriend = true }) {
                     Icon(Icons.Default.PersonAdd, "Add Friend", tint = Color.White)
                 }
                 IconButton(onClick = { isSearchExpanded = !isSearchExpanded; if (!isSearchExpanded) searchText = "" }) {
@@ -236,6 +239,12 @@ fun FriendsScreen(
             }
         }
     }
+
+    if (showAddFriend) {
+        AddFriendDialog(
+            onDismiss = { showAddFriend = false }
+        )
+    }
 }
 
 @Composable
@@ -276,6 +285,134 @@ private fun FriendListRow(friend: Friend, balance: Int, onClick: () -> Unit) {
                     fontWeight = FontWeight.Bold, fontSize = 14.sp,
                     color = if (balance > 0) Positive else Negative
                 )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AddFriendDialog(onDismiss: () -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    var email by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf<String?>(null) }
+    val inviteCode = remember {
+        val chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+        val seed = abs(System.currentTimeMillis().hashCode())
+        buildString {
+            var s = seed
+            repeat(6) {
+                append(chars[s % chars.length])
+                s /= chars.length
+            }
+        }
+    }
+
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = Color.White,
+        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Add Friend", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+
+            Spacer(Modifier.height(8.dp))
+
+            Text("Add a friend by email", fontSize = 14.sp, color = TextSecondary)
+
+            Spacer(Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it; error = null },
+                placeholder = { Text("friend@example.com") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                shape = RoundedCornerShape(16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Primary.copy(alpha = 0.3f),
+                    unfocusedBorderColor = Color(0xFFE0E0E0)
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            if (error != null) {
+                Spacer(Modifier.height(4.dp))
+                Text(error!!, fontSize = 12.sp, color = Negative)
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    if (email.contains("@")) {
+                        onDismiss()
+                    } else {
+                        error = "Please enter a valid email address."
+                    }
+                },
+                enabled = email.isNotEmpty(),
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(28.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Primary)
+            ) {
+                Text("Send friend request", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            // Divider with "or"
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                HorizontalDivider(modifier = Modifier.weight(1f))
+                Text("  or  ", fontSize = 12.sp, color = TextTertiary)
+                HorizontalDivider(modifier = Modifier.weight(1f))
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            Text("Share your invite code", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+
+            Spacer(Modifier.height(8.dp))
+
+            Text(
+                inviteCode,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = Primary,
+                fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                modifier = Modifier
+                    .background(Primary.copy(alpha = 0.08f), RoundedCornerShape(12.dp))
+                    .padding(horizontal = 24.dp, vertical = 12.dp)
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            OutlinedButton(
+                onClick = {
+                    val sendIntent = android.content.Intent().apply {
+                        action = android.content.Intent.ACTION_SEND
+                        putExtra(android.content.Intent.EXTRA_TEXT,
+                            "Join me on SplitEZ! Use my invite code: $inviteCode\n\nDownload SplitEZ and enter this code to connect.")
+                        type = "text/plain"
+                    }
+                    context.startActivity(android.content.Intent.createChooser(sendIntent, "Share invite"))
+                },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(28.dp),
+                border = androidx.compose.foundation.BorderStroke(1.5.dp, Primary)
+            ) {
+                Icon(Icons.Default.Share, null, tint = Primary, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Share invite link", fontWeight = FontWeight.SemiBold, color = Primary)
             }
         }
     }
