@@ -251,29 +251,26 @@ private fun SettleUpSheet(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
+                    .fillMaxWidth()
                     .border(1.5.dp, Primary.copy(alpha = 0.3f), RoundedCornerShape(16.dp))
                     .padding(horizontal = 24.dp, vertical = 16.dp)
             ) {
                 Text("₹", fontSize = 20.sp, color = TextSecondary)
-                Spacer(Modifier.width(4.dp))
-                OutlinedTextField(
+                Spacer(Modifier.width(8.dp))
+                androidx.compose.foundation.text.BasicTextField(
                     value = settleAmount,
-                    onValueChange = { settleAmount = it },
+                    onValueChange = { newVal -> settleAmount = newVal.filter { it.isDigit() || it == '.' } },
                     textStyle = androidx.compose.ui.text.TextStyle(
                         fontSize = 36.sp,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = Color.Black
                     ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.Transparent,
-                        unfocusedBorderColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    ),
-                    modifier = Modifier.width(160.dp)
+                    modifier = Modifier.weight(1f)
                 )
+                Spacer(Modifier.width(8.dp))
                 Icon(Icons.Default.Edit, null, tint = TextTertiary, modifier = Modifier.size(16.dp))
             }
 

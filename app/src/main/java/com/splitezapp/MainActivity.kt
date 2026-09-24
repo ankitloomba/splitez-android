@@ -184,10 +184,23 @@ fun MainScreen(authVM: AuthViewModel) {
         is NavDestination.Tabs -> {
             Scaffold(
                 bottomBar = {
-                    Surface(
-                        shadowElevation = 8.dp,
-                        color = Color.White.copy(alpha = 0.92f)
-                    ) {
+                    Column {
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(12.dp)
+                                .background(
+                                    brush = androidx.compose.ui.graphics.Brush.verticalGradient(
+                                        colors = listOf(
+                                            Color.Transparent,
+                                            Color.Black.copy(alpha = 0.06f)
+                                        )
+                                    )
+                                )
+                        )
+                        Surface(
+                            color = Color.White.copy(alpha = 0.95f)
+                        ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -244,6 +257,7 @@ fun MainScreen(authVM: AuthViewModel) {
                                 }
                             }
                         }
+                    }
                     }
                 },
                 floatingActionButton = {
