@@ -91,7 +91,9 @@ fun AccountScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 SectionLabel("PROFILE")
-                AccountRow(Icons.Default.Person, "Edit profile", "Name, photo, phone") {}
+                AccountRow(Icons.Default.Person, "Edit profile", "Name, photo, phone") {
+                    onNavigate(NavDestination.EditProfile)
+                }
                 RowDivider()
                 AccountRow(Icons.Default.CurrencyExchange, "Currency", user?.currency ?: "INR") {}
 

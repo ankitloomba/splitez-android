@@ -36,6 +36,7 @@ import com.splitezapp.ui.groups.GroupsScreen
 import com.splitezapp.ui.imports.ImportScreen
 import com.splitezapp.ui.notifications.NotificationsScreen
 import com.splitezapp.ui.settings.AccountScreen
+import com.splitezapp.ui.settings.EditProfileScreen
 import com.splitezapp.ui.settings.SecurityScreen
 import com.splitezapp.ui.settings.SettingsScreen
 import com.splitezapp.ui.theme.*
@@ -90,6 +91,7 @@ sealed class NavDestination {
     data object Export : NavDestination()
     data object Import : NavDestination()
     data class FriendSettings(val friendId: String) : NavDestination()
+    data object EditProfile : NavDestination()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -175,6 +177,10 @@ fun MainScreen(authVM: AuthViewModel) {
                 )
             }
         }
+        is NavDestination.EditProfile -> EditProfileScreen(
+            user = authVM.currentUser,
+            onBack = { navDest = NavDestination.Account }
+        )
         is NavDestination.Tabs -> {
             Scaffold(
                 bottomBar = {
