@@ -65,7 +65,7 @@ fun GroupsScreen(onGroupTap: (String) -> Unit = {}) {
                     Icon(Icons.Default.AutoAwesome, "AI", tint = Color.White)
                 }
                 IconButton(onClick = { showCreate = true }) {
-                    Icon(Icons.Default.PersonAdd, "Create group", tint = Color.White)
+                    Icon(Icons.Default.AddCircleOutline, "Create group", tint = Color.White)
                 }
                 IconButton(onClick = { isSearchExpanded = !isSearchExpanded; if (!isSearchExpanded) searchText = "" }) {
                     Icon(Icons.Default.Search, "Search", tint = Color.White)

@@ -183,6 +183,7 @@ fun MainScreen(authVM: AuthViewModel) {
         )
         is NavDestination.Tabs -> {
             Scaffold(
+                containerColor = Color.White,
                 bottomBar = {
                     Column {
                         Spacer(
