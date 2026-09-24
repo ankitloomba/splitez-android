@@ -68,7 +68,7 @@ fun FriendsScreen(
                 .fillMaxWidth()
                 .background(DarkBg)
                 .padding(horizontal = 20.dp)
-                .padding(top = 48.dp, bottom = 10.dp)
+                .padding(top = 48.dp, bottom = 20.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Friends", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
