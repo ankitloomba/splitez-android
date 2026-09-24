@@ -90,7 +90,7 @@ sealed class NavDestination {
 fun MainScreen(authVM: AuthViewModel) {
     var selectedTab by remember { mutableIntStateOf(0) }
     var navDest by remember { mutableStateOf<NavDestination>(NavDestination.Tabs) }
-    val screens = listOf("friends", "groups", "activity")
+    val screens = listOf("friends", "groups", "activity", "account")
 
     LaunchedEffect(Unit) {
         AnalyticsTracker.startSession()
@@ -203,6 +203,13 @@ fun MainScreen(authVM: AuthViewModel) {
                             label = { Text("Activity") },
                             colors = navColors
                         )
+                        NavigationBarItem(
+                            selected = selectedTab == 3,
+                            onClick = { selectedTab = 3 },
+                            icon = { Icon(Icons.Default.AccountCircle, "Account") },
+                            label = { Text("Account") },
+                            colors = navColors
+                        )
                     }
                 },
                 floatingActionButton = {
@@ -236,6 +243,12 @@ fun MainScreen(authVM: AuthViewModel) {
                                     navDest = NavDestination.AddExpense(editExpenseId = entityId)
                                 }
                             }
+                        )
+                        3 -> AccountScreen(
+                            user = authVM.currentUser,
+                            onBack = { selectedTab = 0 },
+                            onNavigate = { navDest = it },
+                            onLogout = { authVM.logout(); navDest = NavDestination.Tabs }
                         )
                     }
                 }

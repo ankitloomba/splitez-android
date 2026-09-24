@@ -73,9 +73,6 @@ fun FriendsScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Friends", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.weight(1f))
-                IconButton(onClick = { onMenuNavigate(com.splitezapp.NavDestination.Account) }) {
-                    Icon(Icons.Default.AccountCircle, "Account", tint = Color.White)
-                }
                 IconButton(onClick = { /* AI action */ }) {
                     Icon(Icons.Default.AutoAwesome, "AI", tint = Color.White)
                 }
