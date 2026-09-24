@@ -49,12 +49,11 @@ fun GroupsScreen(onGroupTap: (String) -> Unit = {}) {
         result
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().background(DarkBg)) {
         // Dark header
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(DarkBg)
                 .padding(horizontal = 20.dp)
                 .padding(top = 48.dp, bottom = 20.dp)
         ) {
@@ -155,7 +154,7 @@ fun GroupsScreen(onGroupTap: (String) -> Unit = {}) {
 
         // Content
         Surface(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth().weight(1f),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
             color = Color.White
         ) {
