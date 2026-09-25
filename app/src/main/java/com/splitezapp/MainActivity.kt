@@ -205,7 +205,8 @@ fun MainScreen(authVM: AuthViewModel) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 8.dp, vertical = 8.dp)
+                                .padding(horizontal = 8.dp)
+                                .padding(top = 8.dp, bottom = 16.dp)
                                 .navigationBarsPadding(),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
