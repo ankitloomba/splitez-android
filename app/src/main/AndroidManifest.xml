@@ -20,6 +20,11 @@
             </intent-filter>
         </activity>
 
+        <!-- AdMob App ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2574042432872288~1135179692" />
+
         <!-- Firebase Cloud Messaging -->
         <service
             android:name=".push.PushNotificationService"

@@ -42,14 +42,26 @@ import com.splitezapp.ui.settings.SettingsScreen
 import com.splitezapp.ui.theme.*
 import com.splitezapp.data.analytics.AnalyticsTracker
 import com.splitezapp.push.PushNotificationService
+import com.splitezapp.ui.ads.InterstitialAdManager
 
 class MainActivity : ComponentActivity() {
+    private var hasShownInitialAd = false
+
+    override fun onResume() {
+        super.onResume()
+        if (hasShownInitialAd) {
+            InterstitialAdManager.showIfReady(this)
+        }
+        hasShownInitialAd = true
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ApiClient.init(applicationContext)
         AnalyticsTracker.registerInstall(applicationContext)
         PushNotificationService.createNotificationChannel(this)
         PushNotificationService.registerToken(this)
+        InterstitialAdManager.initialize(this)
         enableEdgeToEdge()
 
         setContent {

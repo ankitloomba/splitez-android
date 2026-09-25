@@ -62,4 +62,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-analytics")
+
+    // AdMob
+    implementation("com.google.android.gms:play-services-ads:23.2.0")
 }
