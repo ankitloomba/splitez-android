@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.sp
 import com.splitezapp.data.models.*
 import com.splitezapp.ui.components.AvatarView
 import com.splitezapp.ui.theme.*
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import kotlin.math.abs
 
 @Composable
@@ -93,7 +95,18 @@ fun FriendSettingsScreen(
             Spacer(Modifier.height(12.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                AvatarView(friend.toUserSummary(), size = 56.dp)
+                Box(contentAlignment = Alignment.Center) {
+                    androidx.compose.foundation.Canvas(modifier = Modifier.size(68.dp)) {
+                        drawCircle(
+                            color = Color(0xFF5B6AE6).copy(alpha = 0.6f),
+                            style = Stroke(
+                                width = 2.dp.toPx(),
+                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 8f), 0f)
+                            )
+                        )
+                    }
+                    AvatarView(friend.toUserSummary(), size = 56.dp)
+                }
                 Spacer(Modifier.width(14.dp))
                 Column {
                     Text(friend.displayName, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -169,7 +182,17 @@ fun FriendSettingsScreen(
                 if (commonGroups.isNotEmpty()) {
                     SectionLabel("GROUPS IN COMMON")
 
+                    val groupIcons = listOf(
+                        Icons.Default.Home to Color(0xFF6366F1),
+                        Icons.Default.Schedule to Color(0xFFF59E0B),
+                        Icons.Default.Groups to Color(0xFF16A34A),
+                        Icons.Default.Restaurant to Color(0xFFF87171),
+                        Icons.Default.Luggage to Color(0xFF8B5CF6),
+                        Icons.Default.ShoppingCart to Color(0xFF0EA5E9)
+                    )
                     commonGroups.forEachIndexed { index, group ->
+                        val styleIndex = abs(group.name.hashCode()) % groupIcons.size
+                        val (icon, iconColor) = groupIcons[styleIndex]
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -177,15 +200,13 @@ fun FriendSettingsScreen(
                                 .padding(horizontal = 20.dp, vertical = 10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Surface(
-                                modifier = Modifier.size(40.dp),
-                                shape = RoundedCornerShape(10.dp),
-                                color = Primary.copy(alpha = 0.12f)
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .background(iconColor.copy(alpha = 0.12f), RoundedCornerShape(10.dp)),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    val emojis = listOf("🏠", "🍽️", "✈️", "🎮", "🏢", "🎓", "⚽️", "🎵")
-                                    Text(emojis[abs(group.name.hashCode()) % emojis.size], fontSize = 18.sp)
-                                }
+                                Icon(icon, null, tint = iconColor, modifier = Modifier.size(20.dp))
                             }
                             Spacer(Modifier.width(14.dp))
                             Column(modifier = Modifier.weight(1f)) {
