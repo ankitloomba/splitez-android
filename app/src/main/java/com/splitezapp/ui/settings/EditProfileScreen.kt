@@ -43,7 +43,7 @@ fun EditProfileScreen(
                 .fillMaxWidth()
                 .background(DarkBg)
                 .padding(horizontal = 20.dp)
-                .padding(top = 48.dp, bottom = 24.dp),
+                .padding(top = 48.dp, bottom = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Nav bar
@@ -60,7 +60,7 @@ fun EditProfileScreen(
                 Spacer(Modifier.size(48.dp))
             }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(8.dp))
 
             // Avatar with camera icon
             Box(contentAlignment = Alignment.BottomEnd) {
