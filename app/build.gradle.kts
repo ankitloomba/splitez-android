@@ -65,4 +65,16 @@ dependencies {
 
     // AdMob
     implementation("com.google.android.gms:play-services-ads:23.2.0")
+
+    // QR code generation
+    implementation("com.google.zxing:core:3.5.3")
+
+    // QR code scanning (Google Play Services - no camera permission needed in app)
+    implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
+
+    // CameraX for QR scanner viewfinder
+    implementation("androidx.camera:camera-camera2:1.3.4")
+    implementation("androidx.camera:camera-lifecycle:1.3.4")
+    implementation("androidx.camera:camera-view:1.3.4")
+    implementation("com.google.mlkit:barcode-scanning:17.2.0")
 }

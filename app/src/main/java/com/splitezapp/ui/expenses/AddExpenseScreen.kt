@@ -229,10 +229,35 @@ fun AddExpenseScreen(
 
                 val filteredPeople = if (participantSearchText.isBlank()) allPeople
                 else allPeople.filter {
-                    it.displayName.contains(participantSearchText, true)
+                    it.displayName.contains(participantSearchText, true) ||
+                    it.email?.contains(participantSearchText, true) == true
                 }
+                val showEmailInvite = participantSearchText.contains("@") &&
+                    filteredPeople.none { it.email == participantSearchText }
 
                 LazyColumn {
+                    if (showEmailInvite) {
+                        item {
+                            ListItem(
+                                headlineContent = {
+                                    Text("Invite \"$participantSearchText\"", fontWeight = FontWeight.Medium)
+                                },
+                                supportingContent = { Text("Send friend request & add to this expense", fontSize = 12.sp, color = TextSecondary) },
+                                leadingContent = {
+                                    Box(
+                                        modifier = Modifier.size(40.dp).clip(androidx.compose.foundation.shape.CircleShape).background(Primary.copy(alpha = 0.1f)),
+                                        contentAlignment = Alignment.Center
+                                    ) { Icon(Icons.Default.PersonAdd, null, tint = Primary, modifier = Modifier.size(20.dp)) }
+                                },
+                                trailingContent = { Icon(Icons.Default.Add, null, tint = Primary) },
+                                modifier = Modifier.clickable {
+                                    showParticipantPicker = false
+                                    participantSearchText = ""
+                                }
+                            )
+                            HorizontalDivider()
+                        }
+                    }
                     items(filteredPeople, key = { it.id }) { user ->
                         val isSelected = user.id in selectedParticipantIds
                         ListItem(
