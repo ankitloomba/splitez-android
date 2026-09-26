@@ -2,10 +2,12 @@ package com.splitezapp.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -40,6 +42,8 @@ fun SecurityScreen(onBack: () -> Unit) {
         )
     }
 
+    val isDark = isSystemInDarkTheme()
+    val cardBg = if (isDark) Color(0xFF1A1E3A) else Color.White
     Column(modifier = Modifier.fillMaxSize()) {
         // Dark header
         Column(
@@ -51,7 +55,19 @@ fun SecurityScreen(onBack: () -> Unit) {
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.Default.ArrowBack, "Back", tint = Color.White)
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(Color.White.copy(alpha = 0.15f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
                 Spacer(Modifier.weight(1f))
                 Text(
@@ -67,7 +83,7 @@ fun SecurityScreen(onBack: () -> Unit) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            color = Color.White
+            color = cardBg
         ) {
             Column(modifier = Modifier.padding(top = 8.dp).verticalScroll(rememberScrollState())) {
                 // Change password

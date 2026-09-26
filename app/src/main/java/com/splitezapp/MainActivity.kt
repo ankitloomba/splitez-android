@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -194,8 +195,9 @@ fun MainScreen(authVM: AuthViewModel) {
             onBack = { navDest = NavDestination.Account }
         )
         is NavDestination.Tabs -> {
+            val isDark = isSystemInDarkTheme()
             Scaffold(
-                containerColor = Color.White,
+                containerColor = if (isDark) Color(0xFF10142A) else Color.White,
                 bottomBar = {
                     Column {
                         Box(
@@ -212,7 +214,7 @@ fun MainScreen(authVM: AuthViewModel) {
                                 )
                         )
                         Surface(
-                            color = Color.White
+                            color = if (isDark) Color(0xFF10142A) else Color.White
                         ) {
                         Row(
                             modifier = Modifier
@@ -266,7 +268,7 @@ fun MainScreen(authVM: AuthViewModel) {
                                         tab.label,
                                         fontSize = 10.sp,
                                         fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
-                                        color = if (isSelected) Primary else Muted
+                                        color = if (isSelected) (if (isDark) Color.White else OnSurface) else Muted
                                     )
                                 }
                             }

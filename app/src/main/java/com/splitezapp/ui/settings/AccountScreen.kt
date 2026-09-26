@@ -2,6 +2,7 @@ package com.splitezapp.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -30,6 +31,8 @@ fun AccountScreen(
     onNavigate: (NavDestination) -> Unit,
     onLogout: () -> Unit
 ) {
+    val isDark = isSystemInDarkTheme()
+    val cardBg = if (isDark) Color(0xFF1A1E3A) else Color.White
     Column(modifier = Modifier.fillMaxSize()) {
         // Dark header
         Column(
@@ -41,7 +44,19 @@ fun AccountScreen(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.Default.ArrowBack, "Back", tint = Color.White)
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(Color.White.copy(alpha = 0.15f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
                 Spacer(Modifier.weight(1f))
                 Text("Account", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
@@ -83,7 +98,7 @@ fun AccountScreen(
         Surface(
             modifier = Modifier.fillMaxSize(),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            color = Color.White
+            color = cardBg
         ) {
             Column(
                 modifier = Modifier

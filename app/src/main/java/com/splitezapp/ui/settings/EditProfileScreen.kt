@@ -2,6 +2,7 @@ package com.splitezapp.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -36,6 +37,7 @@ fun EditProfileScreen(
     val isEmailVerified = email == user?.email && user?.email != null
     val isPhoneVerified = phone == user?.phone && user?.phone != null
 
+    val isDark = isSystemInDarkTheme()
     Column(modifier = Modifier.fillMaxSize()) {
         // Dark header
         Column(
@@ -52,7 +54,19 @@ fun EditProfileScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.Default.ArrowBack, "Back", tint = Color.White)
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(Color.White.copy(alpha = 0.15f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
                 Spacer(Modifier.weight(1f))
                 Text("Edit profile", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)

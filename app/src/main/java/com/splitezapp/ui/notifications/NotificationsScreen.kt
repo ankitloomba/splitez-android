@@ -2,6 +2,7 @@ package com.splitezapp.ui.notifications
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -43,6 +44,8 @@ fun NotificationsScreen(onBack: () -> Unit) {
 
     LaunchedEffect(Unit) { load() }
 
+    val isDark = isSystemInDarkTheme()
+    val cardBg = if (isDark) Color(0xFF1A1E3A) else Color.White
     Column(modifier = Modifier.fillMaxSize()) {
         // Dark header
         Column(
@@ -54,7 +57,19 @@ fun NotificationsScreen(onBack: () -> Unit) {
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.Default.ArrowBack, "Back", tint = Color.White)
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(Color.White.copy(alpha = 0.15f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
                 Spacer(Modifier.weight(1f))
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -86,7 +101,7 @@ fun NotificationsScreen(onBack: () -> Unit) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            color = Color.White
+            color = cardBg
         ) {
             if (notifications.isEmpty()) {
                 EmptyState("No notifications", "🔔")
