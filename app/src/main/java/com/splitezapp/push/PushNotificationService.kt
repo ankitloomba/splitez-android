@@ -4,26 +4,35 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
 
-// Firebase disabled — stub so the app builds without google-services.json
-object PushNotificationService {
+class PushNotificationService : FirebaseMessagingService() {
 
-    fun createNotificationChannel(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                "splitez_notifications",
-                "SplitEZ Notifications",
-                NotificationManager.IMPORTANCE_HIGH,
-            ).apply {
-                description = "Expense splits, settlements, and group updates"
-                enableVibration(true)
-            }
-            val manager = context.getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(channel)
-        }
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+        // TODO: send token to backend
     }
 
-    fun registerToken(context: Context) {
-        // No-op until Firebase is configured
+    override fun onMessageReceived(message: RemoteMessage) {
+        super.onMessageReceived(message)
+        // TODO: handle incoming push notification
+    }
+
+    companion object {
+        fun createNotificationChannel(context: Context) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    "splitez_notifications",
+                    "SplitEZ Notifications",
+                    NotificationManager.IMPORTANCE_HIGH,
+                ).apply {
+                    description = "Expense splits, settlements, and group updates"
+                    enableVibration(true)
+                }
+                context.getSystemService(NotificationManager::class.java)
+                    .createNotificationChannel(channel)
+            }
+        }
     }
 }
