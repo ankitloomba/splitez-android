@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- S letter for SplitEZ -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,30 C42,30 34,36 34,45 C34,54 42,57 54,60 C66,63 74,66 74,75 C74,84 66,90 54,90 C42,90 34,84 34,75" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M54,30 C42,30 34,36 34,45 C34,54 42,57 54,60 C66,63 74,66 74,75 C74,84 66,90 54,90 C42,90 34,84 34,75" />
+</vector>
