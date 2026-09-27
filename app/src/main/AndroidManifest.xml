@@ -27,13 +27,6 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-2574042432872288~1135179692" />
 
-        <!-- Firebase Cloud Messaging -->
-        <service
-            android:name=".push.PushNotificationService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
+        <!-- Firebase Cloud Messaging (disabled until google-services.json configured) -->
     </application>
 </manifest>

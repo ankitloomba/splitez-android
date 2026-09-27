@@ -2,7 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
-    id("com.google.gms.google-services")
+    // id("com.google.gms.google-services")
 }
 
 android {
@@ -55,10 +55,10 @@ dependencies {
     // Security (encrypted shared prefs)
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
-    // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
-    implementation("com.google.firebase:firebase-messaging")
-    implementation("com.google.firebase:firebase-analytics")
+    // Firebase (disabled until google-services.json is configured)
+    // implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    // implementation("com.google.firebase:firebase-messaging")
+    // implementation("com.google.firebase:firebase-analytics")
 
     // AdMob
     implementation("com.google.android.gms:play-services-ads:23.2.0")
