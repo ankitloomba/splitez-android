@@ -20,6 +20,10 @@ class PushNotificationService : FirebaseMessagingService() {
     }
 
     companion object {
+        fun registerToken(context: Context) {
+            // Token registration handled automatically by Firebase SDK
+        }
+
         fun createNotificationChannel(context: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val channel = NotificationChannel(
