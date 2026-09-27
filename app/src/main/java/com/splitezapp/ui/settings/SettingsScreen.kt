@@ -105,8 +105,3 @@ fun SettingsScreen(
     }
 }
 
-private fun Modifier.clickable(onClick: () -> Unit): Modifier {
-    return this.then(
-        androidx.compose.foundation.clickable { onClick() }
-    )
-}

@@ -42,7 +42,8 @@ data class UserSummary(
     val firstName: String,
     val lastName: String? = null,
     val profilePicture: String? = null,
-    val avatar: AvatarData? = null
+    val avatar: AvatarData? = null,
+    val email: String? = null
 ) {
     val displayName: String get() = listOfNotNull(firstName, lastName).joinToString(" ")
 }
