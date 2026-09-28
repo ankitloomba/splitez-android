@@ -441,12 +441,16 @@ fun AddExpenseScreen(
             }
         }
 
-        // Scrollable form
+        // Scrollable form — white card with rounded top corners overlapping the dark header
+        Surface(
+            modifier = Modifier.weight(1f).offset(y = (-20).dp),
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+            color = if (isDark) Color(0xFF141929) else Color.White
+        ) {
         Column(
             modifier = Modifier
-                .weight(1f)
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .background(if (isDark) Color(0xFF0E1222) else Color.White)
                 .padding(horizontal = 20.dp)
                 .padding(top = 24.dp)
         ) {
@@ -624,13 +628,15 @@ fun AddExpenseScreen(
                 )
             }
 
-            Spacer(Modifier.height(80.dp))
+            Spacer(Modifier.height(100.dp))
         }
+        } // close Surface
 
-        // Save button
+        // Save button — outside the scrollable surface, at the bottom
         Surface(
             tonalElevation = 8.dp,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().offset(y = (-20).dp),
+            color = if (isDark) Color(0xFF141929) else Color.White
         ) {
             Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)) {
                 saveError?.let {
