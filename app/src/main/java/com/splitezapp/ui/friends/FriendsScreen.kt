@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.splitezapp.data.models.*
 import com.splitezapp.ui.components.AvatarView
 import com.splitezapp.ui.theme.*
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import kotlin.math.abs
@@ -35,6 +36,8 @@ fun FriendsScreen(
     onMenuNavigate: (com.splitezapp.NavDestination) -> Unit = {},
     onLogout: () -> Unit = {}
 ) {
+    val isDark = isSystemInDarkTheme()
+    val cardBg = if (isDark) Color(0xFF1A1E3A) else Color.White
     val friends = remember { SampleData.friends }
     var searchText by remember { mutableStateOf("") }
     var isSearchExpanded by remember { mutableStateOf(false) }
@@ -179,7 +182,7 @@ fun FriendsScreen(
         Surface(
             modifier = Modifier.fillMaxWidth().weight(1f).offset(y = (-20).dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            color = Color.White
+            color = cardBg
         ) {
             Column {
                 // Header row

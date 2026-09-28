@@ -37,6 +37,7 @@ import kotlin.math.abs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.isSystemInDarkTheme
 
 private enum class AddFriendTab(val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     EMAIL("Email", Icons.Default.Email),
@@ -53,20 +54,23 @@ fun AddFriendSheet(
     onFriendAdded: () -> Unit = {}
 ) {
     val context = LocalContext.current
+    val isDark = isSystemInDarkTheme()
+    val sheetBg = if (isDark) Color(0xFF1A1E3A) else Color.White
+    val dragHandleColor = if (isDark) Color(0xFF2A3050) else Color(0xFFE0E0E0)
     var activeTab by remember { mutableStateOf(AddFriendTab.EMAIL) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = Color.White,
+        containerColor = sheetBg,
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         dragHandle = {
             Box(
                 Modifier
                     .padding(top = 10.dp, bottom = 4.dp)
                     .size(width = 36.dp, height = 4.dp)
-                    .background(Color(0xFFE0E0E0), RoundedCornerShape(2.dp))
+                    .background(dragHandleColor, RoundedCornerShape(2.dp))
             )
         }
     ) {
@@ -86,7 +90,7 @@ fun AddFriendSheet(
             val tabs = AddFriendTab.entries
             ScrollableTabRow(
                 selectedTabIndex = tabs.indexOf(activeTab),
-                containerColor = Color.White,
+                containerColor = sheetBg,
                 contentColor = Primary,
                 edgePadding = 8.dp,
             ) {
@@ -139,6 +143,7 @@ private fun EmailTab(
     onFriendAdded: () -> Unit,
     context: Context
 ) {
+    val isDark = isSystemInDarkTheme()
     var email by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
     var isSending by remember { mutableStateOf(false) }
@@ -159,7 +164,7 @@ private fun EmailTab(
             shape = RoundedCornerShape(16.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Primary.copy(alpha = 0.5f),
-                unfocusedBorderColor = Color(0xFFE0E0E0)
+                unfocusedBorderColor = if (isDark) Color(0xFF2A3050) else Color(0xFFE0E0E0)
             ),
             modifier = Modifier.fillMaxWidth()
         )
@@ -178,7 +183,7 @@ private fun EmailTab(
             modifier = Modifier.fillMaxWidth(),
             border = androidx.compose.foundation.BorderStroke(
                 1.dp,
-                if (selectedGroupIds.isNotEmpty()) Primary else Color(0xFFE0E0E0)
+                if (selectedGroupIds.isNotEmpty()) Primary else if (isDark) Color(0xFF2A3050) else Color(0xFFE0E0E0)
             )
         ) {
             Icon(
@@ -302,6 +307,7 @@ private fun ScanQrTab(
     onFriendAdded: () -> Unit
 ) {
     val context = LocalContext.current
+    val isDark = isSystemInDarkTheme()
     var scannedCode by remember { mutableStateOf<String?>(null) }
     var hasPermission by remember { mutableStateOf(false) }
 
@@ -351,7 +357,7 @@ private fun ScanQrTab(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFFE8F5E9), RoundedCornerShape(16.dp))
+                    .background(if (isDark) Color(0xFF1A3325) else Color(0xFFE8F5E9), RoundedCornerShape(16.dp))
                     .padding(20.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -384,7 +390,7 @@ private fun ScanQrTab(
                 modifier = Modifier
                     .size(240.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFFF5F5F5)),
+                    .background(if (isDark) Color(0xFF141929) else Color(0xFFF5F5F5)),
                 contentAlignment = Alignment.Center
             ) {
                 // Scanner frame corners
@@ -467,6 +473,7 @@ private fun QrScannerFrame() {
 
 @Composable
 private fun MyQrTab() {
+    val isDark = isSystemInDarkTheme()
     val context = LocalContext.current
     val inviteCode = rememberInviteCode()
     val qrContent = "splitez://add?code=$inviteCode"
@@ -495,8 +502,8 @@ private fun MyQrTab() {
             modifier = Modifier
                 .size(220.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
-                .border(1.dp, Color(0xFFEEEEEE), RoundedCornerShape(16.dp))
+                .background(if (isDark) Color(0xFF0E1222) else Color.White)
+                .border(1.dp, if (isDark) Color(0xFF2A3050) else Color(0xFFEEEEEE), RoundedCornerShape(16.dp))
                 .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -575,6 +582,7 @@ private fun MyQrTab() {
 
 @Composable
 private fun NfcTapTab(context: Context) {
+    val isDark = isSystemInDarkTheme()
     val nfcAdapter = remember { NfcAdapter.getDefaultAdapter(context) }
     val nfcAvailable = nfcAdapter != null
     val nfcEnabled = nfcAdapter?.isEnabled == true
@@ -607,11 +615,12 @@ private fun NfcTapTab(context: Context) {
                 .clip(CircleShape)
                 .background(
                     if (isListening && nfcEnabled) Primary.copy(alpha = 0.12f)
-                    else Color(0xFFF5F5F5)
+                    else if (isDark) Color(0xFF141929) else Color(0xFFF5F5F5)
                 )
                 .border(
                     2.dp,
-                    if (isListening && nfcEnabled) Primary.copy(alpha = 0.4f) else Color(0xFFEEEEEE),
+                    if (isListening && nfcEnabled) Primary.copy(alpha = 0.4f)
+                    else if (isDark) Color(0xFF2A3050) else Color(0xFFEEEEEE),
                     CircleShape
                 ),
             contentAlignment = Alignment.Center
@@ -709,6 +718,7 @@ private fun EnterCodeTab(
     onDismiss: () -> Unit,
     onFriendAdded: () -> Unit
 ) {
+    val isDark = isSystemInDarkTheme()
     var code by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
     var selectedGroupIds by remember { mutableStateOf(setOf<String>()) }
@@ -750,7 +760,7 @@ private fun EnterCodeTab(
             shape = RoundedCornerShape(16.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Primary.copy(alpha = 0.5f),
-                unfocusedBorderColor = Color(0xFFE0E0E0),
+                unfocusedBorderColor = if (isDark) Color(0xFF2A3050) else Color(0xFFE0E0E0),
                 focusedContainerColor = Primary.copy(alpha = 0.04f),
                 unfocusedContainerColor = Primary.copy(alpha = 0.02f)
             ),
@@ -771,7 +781,7 @@ private fun EnterCodeTab(
             modifier = Modifier.fillMaxWidth(),
             border = androidx.compose.foundation.BorderStroke(
                 1.dp,
-                if (selectedGroupIds.isNotEmpty()) Primary else Color(0xFFE0E0E0)
+                if (selectedGroupIds.isNotEmpty()) Primary else if (isDark) Color(0xFF2A3050) else Color(0xFFE0E0E0)
             )
         ) {
             Icon(Icons.Default.GroupAdd, null, modifier = Modifier.size(16.dp),

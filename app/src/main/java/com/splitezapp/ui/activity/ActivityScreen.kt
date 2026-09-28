@@ -2,6 +2,7 @@ package com.splitezapp.ui.activity
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -30,6 +31,8 @@ import kotlin.math.abs
 
 @Composable
 fun ActivityScreen(onActivityTap: (String) -> Unit) {
+    val isDark = isSystemInDarkTheme()
+    val cardBg = if (isDark) Color(0xFF1A1E3A) else Color.White
     val activities = ExpenseStore.activities
     var activeSort by remember { mutableStateOf("Date") }
     var searchText by remember { mutableStateOf("") }
@@ -147,7 +150,7 @@ fun ActivityScreen(onActivityTap: (String) -> Unit) {
         Surface(
             modifier = Modifier.fillMaxSize().offset(y = (-20).dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            color = Color.White
+            color = cardBg
         ) {
             if (activities.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

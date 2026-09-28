@@ -2,6 +2,7 @@ package com.splitezapp.ui.groups
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -35,6 +36,9 @@ fun GroupsScreen(onGroupTap: (String) -> Unit = {}) {
     var showOverflowMenu by remember { mutableStateOf(false) }
     var activeFilter by remember { mutableStateOf("All") }
     val filterOptions = listOf("All", "Active", "Settled")
+
+    val isDark = isSystemInDarkTheme()
+    val cardBg = if (isDark) Color(0xFF1A1E3A) else Color.White
 
     LaunchedEffect(Unit) {
         try { groups = ApiClient.api.getGroups() } catch (_: Exception) {}
@@ -156,7 +160,7 @@ fun GroupsScreen(onGroupTap: (String) -> Unit = {}) {
         Surface(
             modifier = Modifier.fillMaxWidth().weight(1f).offset(y = (-20).dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            color = Color.White
+            color = cardBg
         ) {
             Column {
                 Row(

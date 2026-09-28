@@ -3,6 +3,7 @@ package com.splitezapp.ui.expenses
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -75,6 +76,7 @@ fun AddExpenseScreen(
     prefillFriend: Friend? = null,
     editExpense: Expense? = null
 ) {
+    val isDark = isSystemInDarkTheme()
     val editingId = editExpense?.id
 
     var amountText by remember {
@@ -444,7 +446,7 @@ fun AddExpenseScreen(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .background(Color.White)
+                .background(if (isDark) Color(0xFF0E1222) else Color.White)
                 .padding(horizontal = 20.dp)
                 .padding(top = 24.dp)
         ) {

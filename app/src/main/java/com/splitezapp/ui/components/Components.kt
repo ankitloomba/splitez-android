@@ -58,7 +58,7 @@ fun EmptyState(message: String, icon: String = "📋") {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(icon, fontSize = 48.sp)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(message, style = MaterialTheme.typography.bodyLarge, color = Color.Gray)
+            Text(message, style = MaterialTheme.typography.bodyLarge, color = TextSecondary)
         }
     }
 }

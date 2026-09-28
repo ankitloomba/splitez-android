@@ -135,9 +135,9 @@ fun FriendLedgerScreen(
                     Button(
                         onClick = { showSettleUp = true },
                         modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                        colors = ButtonDefaults.buttonColors(containerColor = if (isDark) Color(0xFF2A3050) else Color.White),
                         shape = RoundedCornerShape(24.dp)
-                    ) { Text("Settle up", color = OnSurface) }
+                    ) { Text("Settle up", color = if (isDark) Color.White else OnSurface) }
                 }
             }
 
@@ -211,6 +211,7 @@ private fun SettleUpSheet(
     balance: Int,
     onDismiss: () -> Unit
 ) {
+    val isDark = isSystemInDarkTheme()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val defaultAmount = String.format("%.0f", abs(balance) / 100.0)
     var settleAmount by remember { mutableStateOf(defaultAmount) }
@@ -219,7 +220,7 @@ private fun SettleUpSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = Color.White,
+        containerColor = if (isDark) Color(0xFF1A1E3A) else Color.White,
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
     ) {
         Column(
@@ -279,7 +280,7 @@ private fun SettleUpSheet(
                         fontSize = 36.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
-                        color = Color.Black
+                        color = if (isDark) Color.White else Color.Black
                     ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
