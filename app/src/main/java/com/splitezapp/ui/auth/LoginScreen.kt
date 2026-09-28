@@ -41,41 +41,43 @@ import com.splitezapp.ui.theme.*
 fun SplitEZLogo(size: Int = 64) {
     val lightIndigo = Color(0xFF818CF8)
     val deepIndigo = Color(0xFF4338CA)
+    // 21.5° from vertical — spec: split turn 21.5° anticlockwise from vertical
+    val tiltRad = (21.5 * kotlin.math.PI / 180).toFloat()
     Canvas(modifier = Modifier
         .size(size.dp)
-        .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+        .clip(androidx.compose.foundation.shape.CircleShape)
     ) {
         val center = Offset(this.size.width / 2, this.size.height / 2)
         val radius = this.size.minDimension / 2
-        val halfGap = radius * 0.055f  // slightly wider gap
+        // Each half slides 2.8u on a 52u radius disc
+        val slide = radius * (2.8f / 52f)
+        // Perpendicular direction toward right/dark half: (cos21.5°, sin21.5°) in screen coords
+        val slideDx = kotlin.math.cos(tiltRad) * slide
+        val slideDy = kotlin.math.sin(tiltRad) * slide
+        // Arc split angle: 90° + 21.5° = 111.5°
+        val splitAngle = 111.5f
 
-        // Left half — light indigo (rotated 20° so boundary matches gap)
-        drawArc(
-            color = lightIndigo,
-            startAngle = 110f,
-            sweepAngle = 180f,
-            useCenter = true,
-            topLeft = Offset(center.x - radius, center.y - radius),
-            size = Size(radius * 2, radius * 2)
-        )
+        // Left half — light indigo: shifted (-slideDx, -slideDy)
+        translate(left = -slideDx, top = -slideDy) {
+            drawArc(
+                color = lightIndigo,
+                startAngle = splitAngle,
+                sweepAngle = 180f,
+                useCenter = true,
+                topLeft = Offset(center.x - radius, center.y - radius),
+                size = Size(radius * 2, radius * 2)
+            )
+        }
 
-        // Right half — deep indigo
-        drawArc(
-            color = deepIndigo,
-            startAngle = 290f,
-            sweepAngle = 180f,
-            useCenter = true,
-            topLeft = Offset(center.x - radius, center.y - radius),
-            size = Size(radius * 2, radius * 2)
-        )
-
-        // Erase gap at same 20° angle as arc boundary
-        rotate(degrees = 20f, pivot = center) {
-            drawRect(
-                color = Color.Black,
-                topLeft = Offset(center.x - halfGap, -2.dp.toPx()),
-                size = Size(halfGap * 2, this.size.height + 4.dp.toPx()),
-                blendMode = BlendMode.Clear
+        // Right half — deep indigo: shifted (+slideDx, +slideDy)
+        translate(left = slideDx, top = slideDy) {
+            drawArc(
+                color = deepIndigo,
+                startAngle = splitAngle + 180f,
+                sweepAngle = 180f,
+                useCenter = true,
+                topLeft = Offset(center.x - radius, center.y - radius),
+                size = Size(radius * 2, radius * 2)
             )
         }
     }
