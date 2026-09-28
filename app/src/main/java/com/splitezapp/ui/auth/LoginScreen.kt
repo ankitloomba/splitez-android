@@ -69,8 +69,8 @@ fun SplitEZLogo(size: Int = 64) {
             size = Size(radius * 2, radius * 2)
         )
 
-        // Erase the divider gap — ~12° tilt (like "/" shape in logo)
-        rotate(degrees = -12f, pivot = center) {
+        // Erase the divider gap — ~15° "/" tilt (top leans right, like logo)
+        rotate(degrees = 15f, pivot = center) {
             drawRect(
                 color = Color.Black,
                 topLeft = Offset(center.x - halfGap, -2.dp.toPx()),
