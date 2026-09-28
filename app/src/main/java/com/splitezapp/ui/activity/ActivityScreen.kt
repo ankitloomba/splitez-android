@@ -37,10 +37,15 @@ fun ActivityScreen(onActivityTap: (String) -> Unit) {
     var activeSort by remember { mutableStateOf("Date") }
     var searchText by remember { mutableStateOf("") }
     var showSearch by remember { mutableStateOf(false) }
+    var showMenu by remember { mutableStateOf(false) }
+    var filterType by remember { mutableStateOf("All") }
     val sortOptions = listOf("Date", "Name", "Type", "Amount")
 
     val sortedActivities = remember(activeSort, searchText, activities.size) {
         var result = activities.toList()
+        if (filterType != "All") {
+            result = result.filter { a -> a.type.lowercase().contains(filterType.lowercase()) }
+        }
         if (searchText.isNotEmpty()) {
             val q = searchText.lowercase()
             result = result.filter { a ->
@@ -103,6 +108,33 @@ fun ActivityScreen(onActivityTap: (String) -> Unit) {
                 IconButton(onClick = { showSearch = !showSearch; if (!showSearch) searchText = "" }) {
                     Icon(Icons.Default.Search, null, tint = Color.White)
                 }
+                Box {
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(Icons.Default.MoreVert, null, tint = Color.White)
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false },
+                        modifier = Modifier.background(if (isDark) Color(0xFF1A1E3A) else Color.White)
+                    ) {
+                        listOf("All", "Expense", "Settlement", "Group", "Friend").forEach { type ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        "Filter: $type",
+                                        color = if (filterType == type) Primary else if (isDark) Color.White else Color.Black
+                                    )
+                                },
+                                onClick = { filterType = type; showMenu = false }
+                            )
+                        }
+                        HorizontalDivider()
+                        DropdownMenuItem(
+                            text = { Text("Export activity", color = if (isDark) Color.White else Color.Black) },
+                            onClick = { showMenu = false }
+                        )
+                    }
+                }
             }
 
             if (showSearch) {
@@ -127,7 +159,30 @@ fun ActivityScreen(onActivityTap: (String) -> Unit) {
 
             Spacer(Modifier.height(12.dp))
 
-            // Sort pills
+            // Sort + filter pills
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (filterType != "All") {
+                    item {
+                        FilterChip(
+                            selected = true,
+                            onClick = { filterType = "All" },
+                            label = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text("Type: $filterType", fontSize = 14.sp)
+                                    Spacer(Modifier.width(4.dp))
+                                    Icon(Icons.Default.Close, null, modifier = Modifier.size(14.dp))
+                                }
+                            },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = Negative.copy(alpha = 0.8f),
+                                selectedLabelColor = Color.White
+                            ),
+                            border = null
+                        )
+                    }
+                }
+            }
+            Spacer(Modifier.height(4.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(sortOptions) { option ->
                     FilterChip(
