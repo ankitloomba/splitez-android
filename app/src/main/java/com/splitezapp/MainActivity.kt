@@ -280,9 +280,10 @@ fun MainScreen(authVM: AuthViewModel) {
                     FloatingActionButton(
                         onClick = { navDest = NavDestination.AddExpense() },
                         containerColor = Primary,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        shape = androidx.compose.foundation.shape.CircleShape,
+                        modifier = Modifier.padding(bottom = 8.dp).size(64.dp)
                     ) {
-                        Icon(Icons.Default.Add, "Add expense", tint = Color.White)
+                        Icon(Icons.Default.Add, "Add expense", tint = Color.White, modifier = Modifier.size(28.dp))
                     }
                 }
             ) { padding ->
