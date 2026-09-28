@@ -53,11 +53,12 @@ fun GroupsScreen(onGroupTap: (String) -> Unit = {}) {
         result
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(DarkBg)) {
+    Column(modifier = Modifier.fillMaxSize().background(cardBg)) {
         // Dark header
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(DarkBg)
                 .padding(horizontal = 20.dp)
                 .padding(top = 8.dp, bottom = 40.dp)
         ) {
