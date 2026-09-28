@@ -87,10 +87,23 @@ fun SplashScreen() {
         modifier = Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color(0xFF10142A)),
         contentAlignment = Alignment.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            com.splitezapp.ui.auth.SplitEZLogo(size = 72)
-            Spacer(modifier = Modifier.size(24.dp))
-            CircularProgressIndicator(color = androidx.compose.ui.graphics.Color(0xFF818CF8), modifier = Modifier.size(28.dp))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Spacer(modifier = Modifier.weight(1f))
+            com.splitezapp.ui.auth.SplitEZLogo(size = 120)
+            Spacer(modifier = Modifier.size(20.dp))
+            Text("SplitEZ", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text(
+                "Split smarter. Settle faster.",
+                fontSize = 15.sp,
+                color = Color(0xFF818CF8),
+                modifier = Modifier.padding(top = 6.dp)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            CircularProgressIndicator(color = Color(0xFF818CF8), modifier = Modifier.size(28.dp))
+            Spacer(modifier = Modifier.size(60.dp))
         }
     }
 }
