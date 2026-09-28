@@ -40,29 +40,10 @@ fun AccountScreen(
                 .fillMaxWidth()
                 .background(DarkBg)
                 .padding(horizontal = 20.dp)
-                .padding(top = 8.dp, bottom = 32.dp)
+                .padding(top = 8.dp, bottom = 44.dp)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onBack) {
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .background(Color.White.copy(alpha = 0.15f), CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-                Spacer(Modifier.weight(1f))
-                Text("Account", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                Spacer(Modifier.weight(1f))
-                Spacer(Modifier.size(48.dp))
-            }
+            Text("Account", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.fillMaxWidth(), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
 
             Spacer(Modifier.height(16.dp))
 
@@ -94,9 +75,9 @@ fun AccountScreen(
             }
         }
 
-        // Content
+        // Content — negative offset so rounded top overlaps the dark header
         Surface(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().offset(y = (-20).dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
             color = cardBg
         ) {
