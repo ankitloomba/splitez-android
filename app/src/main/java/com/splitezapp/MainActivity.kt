@@ -92,7 +92,7 @@ fun SplashScreen() {
             modifier = Modifier.fillMaxSize()
         ) {
             Spacer(modifier = Modifier.weight(1f))
-            com.splitezapp.ui.auth.SplitEZLogo(size = 120)
+            com.splitezapp.ui.auth.SplitEZLogo(size = 60)
             Spacer(modifier = Modifier.size(20.dp))
             Text("SplitEZ", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
             Text(
