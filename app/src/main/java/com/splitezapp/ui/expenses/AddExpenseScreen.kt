@@ -365,7 +365,7 @@ fun AddExpenseScreen(
                 .fillMaxWidth()
                 .background(DarkBg)
                 .padding(horizontal = 20.dp)
-                .padding(top = 48.dp, bottom = 24.dp),
+                .windowInsetsPadding(WindowInsets.statusBars).padding(top = 8.dp, bottom = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
