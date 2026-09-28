@@ -152,6 +152,7 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(DarkBg)
+                .statusBarsPadding()
                 .padding(horizontal = 28.dp)
                 .padding(top = 8.dp, bottom = 32.dp)
         ) {
@@ -322,6 +323,7 @@ fun RegisterScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(DarkBg)
+                .statusBarsPadding()
                 .padding(horizontal = 28.dp)
                 .padding(top = 8.dp, bottom = 32.dp)
         ) {
