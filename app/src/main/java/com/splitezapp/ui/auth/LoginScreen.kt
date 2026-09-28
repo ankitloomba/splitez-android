@@ -160,11 +160,8 @@ fun LoginScreen(
                 .padding(horizontal = 28.dp)
                 .padding(top = 8.dp, bottom = 44.dp)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SplitEZLogo(size = 28)
-                Text("SplitEZ", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-            }
-            Spacer(modifier = Modifier.height(16.dp))
+            SplitEZLogo(size = 64)
+            Spacer(modifier = Modifier.height(12.dp))
             Text("Welcome back", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(4.dp))
             Text("Sign in to manage your shared expenses", color = Color.White.copy(alpha = 0.6f), fontSize = 14.sp)
@@ -348,9 +345,10 @@ fun RegisterScreen(
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("Back", color = Color.White, fontSize = 14.sp)
                 }
-                SplitEZLogo(size = 28)
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+            SplitEZLogo(size = 64)
+            Spacer(modifier = Modifier.height(12.dp))
             Text("Create account", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(4.dp))
             Text("Start splitting expenses in seconds", color = Color.White.copy(alpha = 0.6f), fontSize = 14.sp)
