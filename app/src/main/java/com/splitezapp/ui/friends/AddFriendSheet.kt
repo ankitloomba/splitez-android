@@ -86,9 +86,10 @@ fun AddFriendSheet(
                 contentColor = Primary,
                 edgePadding = 8.dp,
                 indicator = { tabPositions ->
-                    if (tabs.indexOf(activeTab) < tabPositions.size) {
-                        TabRowDefaults.SecondaryIndicator(
-                            Modifier.tabIndicatorOffset(tabPositions[tabs.indexOf(activeTab)]),
+                    val idx = tabs.indexOf(activeTab)
+                    if (idx < tabPositions.size) {
+                        TabRowDefaults.PrimaryIndicator(
+                            modifier = Modifier.tabIndicatorOffset(tabPositions[idx]),
                             color = Primary
                         )
                     }
