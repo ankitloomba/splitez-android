@@ -49,10 +49,10 @@ fun SplitEZLogo(size: Int = 64) {
         val radius = this.size.minDimension / 2
         val halfGap = radius * 0.055f  // slightly wider gap
 
-        // Left half — light indigo
+        // Left half — light indigo (rotated 15° so boundary matches gap)
         drawArc(
             color = lightIndigo,
-            startAngle = 90f,
+            startAngle = 105f,
             sweepAngle = 180f,
             useCenter = true,
             topLeft = Offset(center.x - radius, center.y - radius),
@@ -62,14 +62,14 @@ fun SplitEZLogo(size: Int = 64) {
         // Right half — deep indigo
         drawArc(
             color = deepIndigo,
-            startAngle = 270f,
+            startAngle = 285f,
             sweepAngle = 180f,
             useCenter = true,
             topLeft = Offset(center.x - radius, center.y - radius),
             size = Size(radius * 2, radius * 2)
         )
 
-        // Erase the divider gap — ~15° "/" tilt (top leans right, like logo)
+        // Erase gap at same 15° angle as arc boundary
         rotate(degrees = 15f, pivot = center) {
             drawRect(
                 color = Color.Black,
