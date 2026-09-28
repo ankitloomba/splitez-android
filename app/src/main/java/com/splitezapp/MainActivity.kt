@@ -71,12 +71,26 @@ class MainActivity : ComponentActivity() {
 
                 LaunchedEffect(Unit) { authVM.checkAuth() }
 
-                if (authVM.isLoggedIn) {
-                    MainScreen(authVM)
-                } else {
-                    AuthFlow(authVM)
+                when {
+                    authVM.isCheckingAuth -> SplashScreen()
+                    authVM.isLoggedIn -> MainScreen(authVM)
+                    else -> AuthFlow(authVM)
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun SplashScreen() {
+    Box(
+        modifier = Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color(0xFF10142A)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            com.splitezapp.ui.auth.SplitEZLogo(size = 72)
+            Spacer(modifier = Modifier.size(24.dp))
+            CircularProgressIndicator(color = androidx.compose.ui.graphics.Color(0xFF818CF8), modifier = Modifier.size(28.dp))
         }
     }
 }

@@ -84,7 +84,12 @@ object ApiClient {
             val request = original.newBuilder()
                 .header("Authorization", "Bearer $token")
                 .build()
-            return chain.proceed(request)
+            val response = chain.proceed(request)
+            if (response.code == 401) {
+                // Token invalid/expired — clear so checkAuth knows to log out
+                clearTokens()
+            }
+            return response
         }
     }
 }

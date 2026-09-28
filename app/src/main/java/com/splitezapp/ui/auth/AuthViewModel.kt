@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
 class AuthViewModel : ViewModel() {
     var isLoggedIn by mutableStateOf(ApiClient.isLoggedIn)
         private set
+    var isCheckingAuth by mutableStateOf(ApiClient.isLoggedIn) // true while verifying saved token
+        private set
     var currentUser by mutableStateOf<UserProfile?>(null)
         private set
     var isLoading by mutableStateOf(false)
@@ -22,14 +24,20 @@ class AuthViewModel : ViewModel() {
         private set
 
     fun checkAuth() {
-        if (!ApiClient.isLoggedIn) return
+        if (!ApiClient.isLoggedIn) {
+            isCheckingAuth = false
+            return
+        }
         viewModelScope.launch {
             try {
                 currentUser = ApiClient.api.getMe()
                 isLoggedIn = true
             } catch (_: Exception) {
-                isLoggedIn = false
+                // Network/server error — keep user logged in if we still have a token.
+                // 401 clears the token in the interceptor, so isLoggedIn becomes false below.
+                if (!ApiClient.isLoggedIn) isLoggedIn = false
             }
+            isCheckingAuth = false
         }
     }
 
