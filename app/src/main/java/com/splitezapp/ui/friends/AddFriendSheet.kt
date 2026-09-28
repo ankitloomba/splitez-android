@@ -16,7 +16,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
@@ -86,15 +85,6 @@ fun AddFriendSheet(
                 containerColor = Color.White,
                 contentColor = Primary,
                 edgePadding = 8.dp,
-                indicator = { tabPositions ->
-                    val idx = tabs.indexOf(activeTab)
-                    if (idx < tabPositions.size) {
-                        TabRowDefaults.PrimaryIndicator(
-                            modifier = Modifier.tabIndicatorOffset(tabPositions[idx]),
-                            color = Primary
-                        )
-                    }
-                }
             ) {
                 tabs.forEach { tab ->
                     Tab(
