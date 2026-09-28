@@ -40,7 +40,7 @@ fun AccountScreen(
                 .fillMaxWidth()
                 .background(DarkBg)
                 .padding(horizontal = 20.dp)
-                .windowInsetsPadding(WindowInsets.statusBars).padding(top = 4.dp, bottom = 32.dp)
+                .padding(top = 8.dp, bottom = 32.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) {

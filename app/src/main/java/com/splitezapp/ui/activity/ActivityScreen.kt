@@ -92,7 +92,7 @@ fun ActivityScreen(onActivityTap: (String) -> Unit) {
                 .fillMaxWidth()
                 .background(DarkBg)
                 .padding(horizontal = 20.dp)
-                .windowInsetsPadding(WindowInsets.statusBars).padding(top = 4.dp, bottom = 24.dp)
+                .padding(top = 8.dp, bottom = 24.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Activity", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)

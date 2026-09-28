@@ -153,7 +153,7 @@ fun LoginScreen(
                 .fillMaxWidth()
                 .background(DarkBg)
                 .padding(horizontal = 28.dp)
-                .windowInsetsPadding(WindowInsets.statusBars).padding(top = 4.dp, bottom = 32.dp)
+                .padding(top = 8.dp, bottom = 32.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SplitEZLogo(size = 28)
@@ -323,7 +323,7 @@ fun RegisterScreen(
                 .fillMaxWidth()
                 .background(DarkBg)
                 .padding(horizontal = 28.dp)
-                .windowInsetsPadding(WindowInsets.statusBars).padding(top = 4.dp, bottom = 32.dp)
+                .padding(top = 8.dp, bottom = 32.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

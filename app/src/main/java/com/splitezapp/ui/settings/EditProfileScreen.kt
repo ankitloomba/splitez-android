@@ -45,7 +45,7 @@ fun EditProfileScreen(
                 .fillMaxWidth()
                 .background(DarkBg)
                 .padding(horizontal = 20.dp)
-                .windowInsetsPadding(WindowInsets.statusBars).padding(top = 4.dp, bottom = 16.dp),
+                .padding(top = 8.dp, bottom = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Nav bar
