@@ -49,10 +49,10 @@ fun SplitEZLogo(size: Int = 64) {
         val radius = this.size.minDimension / 2
         val halfGap = radius * 0.055f  // slightly wider gap
 
-        // Left half — light indigo (rotated 15° so boundary matches gap)
+        // Left half — light indigo (rotated 20° so boundary matches gap)
         drawArc(
             color = lightIndigo,
-            startAngle = 105f,
+            startAngle = 110f,
             sweepAngle = 180f,
             useCenter = true,
             topLeft = Offset(center.x - radius, center.y - radius),
@@ -62,15 +62,15 @@ fun SplitEZLogo(size: Int = 64) {
         // Right half — deep indigo
         drawArc(
             color = deepIndigo,
-            startAngle = 285f,
+            startAngle = 290f,
             sweepAngle = 180f,
             useCenter = true,
             topLeft = Offset(center.x - radius, center.y - radius),
             size = Size(radius * 2, radius * 2)
         )
 
-        // Erase gap at same 15° angle as arc boundary
-        rotate(degrees = 15f, pivot = center) {
+        // Erase gap at same 20° angle as arc boundary
+        rotate(degrees = 20f, pivot = center) {
             drawRect(
                 color = Color.Black,
                 topLeft = Offset(center.x - halfGap, -2.dp.toPx()),
@@ -160,8 +160,11 @@ fun LoginScreen(
                 .padding(horizontal = 28.dp)
                 .padding(top = 8.dp, bottom = 44.dp)
         ) {
-            SplitEZLogo(size = 64)
-            Spacer(modifier = Modifier.height(12.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SplitEZLogo(size = 28)
+                Text("SplitEZ", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
             Text("Welcome back", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(4.dp))
             Text("Sign in to manage your shared expenses", color = Color.White.copy(alpha = 0.6f), fontSize = 14.sp)
@@ -345,10 +348,9 @@ fun RegisterScreen(
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("Back", color = Color.White, fontSize = 14.sp)
                 }
+                SplitEZLogo(size = 28)
             }
-            Spacer(modifier = Modifier.height(12.dp))
-            SplitEZLogo(size = 64)
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Text("Create account", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(4.dp))
             Text("Start splitting expenses in seconds", color = Color.White.copy(alpha = 0.6f), fontSize = 14.sp)
