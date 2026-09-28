@@ -30,9 +30,13 @@ import androidx.compose.ui.unit.*
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
-import com.splitezapp.data.models.SampleData
+import com.splitezapp.data.api.ApiClient
+import com.splitezapp.data.models.*
 import com.splitezapp.ui.theme.*
 import kotlin.math.abs
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private enum class AddFriendTab(val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     EMAIL("Email", Icons.Default.Email),
@@ -137,6 +141,8 @@ private fun EmailTab(
 ) {
     var email by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
+    var isSending by remember { mutableStateOf(false) }
+    var sent by remember { mutableStateOf(false) }
     var selectedGroupIds by remember { mutableStateOf(setOf<String>()) }
     var showGroupPicker by remember { mutableStateOf(false) }
     val groups = remember { SampleData.groups }
@@ -227,21 +233,48 @@ private fun EmailTab(
 
         Spacer(Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                if (email.contains("@")) {
-                    onFriendAdded()
-                    onDismiss()
-                } else {
-                    error = "Please enter a valid email address."
+        if (sent) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Positive.copy(alpha = 0.1f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text("✅", fontSize = 18.sp)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Friend request sent to $email", fontSize = 14.sp, color = Positive)
                 }
-            },
-            enabled = email.isNotEmpty(),
-            modifier = Modifier.fillMaxWidth().height(52.dp),
-            shape = RoundedCornerShape(28.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Primary)
-        ) {
-            Text("Send friend request", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+            }
+            Spacer(Modifier.height(12.dp))
+            TextButton(onClick = { onFriendAdded(); onDismiss() }, modifier = Modifier.fillMaxWidth()) {
+                Text("Done", color = Primary, fontWeight = FontWeight.Bold)
+            }
+        } else {
+            Button(
+                onClick = {
+                    if (!email.contains("@")) {
+                        error = "Please enter a valid email address."
+                        return@Button
+                    }
+                    isSending = true
+                    error = null
+                    CoroutineScope(Dispatchers.Main).launch {
+                        try {
+                            ApiClient.api.sendFriendRequest(SendFriendRequestBody(email))
+                            sent = true
+                        } catch (e: Exception) {
+                            error = e.message ?: "Failed to send request"
+                        }
+                        isSending = false
+                    }
+                },
+                enabled = email.isNotEmpty() && !isSending,
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape = RoundedCornerShape(28.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Primary)
+            ) {
+                if (isSending) CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
+                else Text("Send friend request", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+            }
         }
 
         Spacer(Modifier.height(16.dp))

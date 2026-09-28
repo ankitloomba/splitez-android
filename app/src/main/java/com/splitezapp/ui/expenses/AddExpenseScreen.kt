@@ -23,11 +23,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.splitezapp.data.api.ApiClient
 import com.splitezapp.data.models.*
 import com.splitezapp.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 enum class ExpenseCategory(val label: String, val icon: String, val color: Color) {
     FOOD("Food", "🍴", Color(0xFFFF9800)),
@@ -150,39 +154,61 @@ fun AddExpenseScreen(
     val canSave = (amountText.toDoubleOrNull() ?: 0.0) > 0 &&
         description.isNotBlank() && participants.isNotEmpty()
 
+    var isSaving by remember { mutableStateOf(false) }
+    var saveError by remember { mutableStateOf<String?>(null) }
+
     fun saveExpense() {
         val amount = ((amountText.toDoubleOrNull() ?: 0.0) * 100).toInt()
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
         val isoFmt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply {
             timeZone = TimeZone.getTimeZone("UTC")
         }
-        val splits = participants.map { user ->
-            ExpenseSplit(
-                userId = user.id, user = user,
-                shareAmount = amount / maxOf(participants.size, 1)
-            )
+        val splitParticipants = participants.map { user ->
+            SplitParticipant(userId = user.id, shareAmount = amount / maxOf(participants.size, 1))
         }
-        val expense = Expense(
-            id = editingId ?: "e_${UUID.randomUUID().toString().take(8)}",
-            description = description,
-            amount = amount,
-            currency = selectedCurrency,
-            splitMethod = splitMethod.lowercase(),
-            category = selectedCategory.label,
-            note = note.ifEmpty { null },
-            date = sdf.format(Date()),
-            paidBy = paidByUser,
-            createdBy = SampleData.currentUser,
-            splits = splits,
-            groupId = selectedGroupIndex?.let { groups.getOrNull(it)?.id },
-            createdAt = isoFmt.format(Date())
-        )
-        if (editingId != null) {
-            ExpenseStore.updateExpense(expense)
-        } else {
-            ExpenseStore.addExpense(expense)
+        isSaving = true
+        saveError = null
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                if (editingId != null) {
+                    // No update endpoint yet — fall back to local store
+                    val splits = participants.map { user ->
+                        ExpenseSplit(userId = user.id, user = user, shareAmount = amount / maxOf(participants.size, 1))
+                    }
+                    val expense = Expense(
+                        id = editingId,
+                        description = description, amount = amount, currency = selectedCurrency,
+                        splitMethod = splitMethod.lowercase(), category = selectedCategory.label,
+                        note = note.ifEmpty { null }, date = sdf.format(Date()),
+                        paidBy = paidByUser, createdBy = SampleData.currentUser,
+                        splits = splits, groupId = selectedGroupIndex?.let { groups.getOrNull(it)?.id },
+                        createdAt = isoFmt.format(Date())
+                    )
+                    ExpenseStore.updateExpense(expense)
+                } else {
+                    val created = ApiClient.api.createExpense(
+                        CreateExpenseRequest(
+                            description = description,
+                            amount = amount,
+                            currency = selectedCurrency,
+                            splitMethod = splitMethod.lowercase(),
+                            category = selectedCategory.label,
+                            note = note.ifEmpty { null },
+                            date = sdf.format(Date()),
+                            paidById = paidByUserId,
+                            groupId = selectedGroupIndex?.let { groups.getOrNull(it)?.id },
+                            participants = splitParticipants,
+                            idempotencyKey = UUID.randomUUID().toString()
+                        )
+                    )
+                    ExpenseStore.addExpense(created)
+                }
+                onDismiss()
+            } catch (e: Exception) {
+                saveError = e.message ?: "Failed to save expense"
+            }
+            isSaving = false
         }
-        onDismiss()
     }
 
     // Participant picker bottom sheet
@@ -604,15 +630,22 @@ fun AddExpenseScreen(
             tonalElevation = 8.dp,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Button(
-                onClick = { if (canSave) saveExpense() },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (canSave) Primary else Primary.copy(alpha = 0.4f)
-                ),
-                shape = RoundedCornerShape(28.dp)
-            ) {
-                Text("Save expense", fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 8.dp))
+            Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)) {
+                saveError?.let {
+                    Text(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp,
+                        modifier = Modifier.padding(bottom = 6.dp))
+                }
+                Button(
+                    onClick = { if (canSave && !isSaving) saveExpense() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (canSave) Primary else Primary.copy(alpha = 0.4f)
+                    ),
+                    shape = RoundedCornerShape(28.dp)
+                ) {
+                    if (isSaving) CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
+                    else Text("Save expense", fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 8.dp))
+                }
             }
         }
     }

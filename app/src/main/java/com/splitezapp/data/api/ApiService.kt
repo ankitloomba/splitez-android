@@ -33,6 +33,16 @@ interface ApiService {
     @PUT("users/me")
     suspend fun updateMe(@Body req: UpdateUserRequest): UserProfile
 
+    @DELETE("users/me")
+    suspend fun deleteMe(): SuccessResponse
+
+    @POST("auth/change-password")
+    suspend fun changePassword(@Body req: ChangePasswordRequest): SuccessResponse
+
+    // Friends
+    @POST("friends/request")
+    suspend fun sendFriendRequest(@Body req: SendFriendRequestBody): SuccessResponse
+
     // People
     @GET("people")
     suspend fun getPeople(): List<UserSummary>

@@ -1,8 +1,10 @@
 package com.splitezapp.ui.exports
 
+import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -20,6 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.splitezapp.data.api.ApiClient
 import com.splitezapp.ui.theme.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Request
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,12 +86,12 @@ fun ExportScreen(onBack: () -> Unit) {
                 buttonText = "Export CSV",
                 isLoading = exporting && exportType == "csv",
                 onClick = {
-                    exporting = true
-                    exportType = "csv"
-                    val url = ApiClient.baseUrl + "exports/expenses?format=csv"
-                    openInBrowser(context, url)
-                    exporting = false
-                    message = "CSV download started in browser"
+                    exporting = true; exportType = "csv"
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val result = downloadExport(context, "csv")
+                        message = result
+                        exporting = false
+                    }
                 }
             )
 
@@ -98,12 +105,12 @@ fun ExportScreen(onBack: () -> Unit) {
                 buttonText = "Export PDF",
                 isLoading = exporting && exportType == "pdf",
                 onClick = {
-                    exporting = true
-                    exportType = "pdf"
-                    val url = ApiClient.baseUrl + "exports/expenses?format=pdf"
-                    openInBrowser(context, url)
-                    exporting = false
-                    message = "PDF download started in browser"
+                    exporting = true; exportType = "pdf"
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val result = downloadExport(context, "pdf")
+                        message = result
+                        exporting = false
+                    }
                 }
             )
 
@@ -175,9 +182,35 @@ private fun ExportCard(
     }
 }
 
-private fun openInBrowser(context: Context, url: String) {
+private suspend fun downloadExport(context: Context, format: String): String = withContext(Dispatchers.IO) {
     try {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        context.startActivity(intent)
-    } catch (_: Exception) {}
+        val url = ApiClient.baseUrl + "exports/expenses?format=$format"
+        val req = Request.Builder().url(url)
+            .header("Authorization", "Bearer ${ApiClient.token ?: ""}").build()
+        val resp = ApiClient.rawClient.newCall(req).execute()
+        if (!resp.isSuccessful) return@withContext "Export failed: ${resp.code}"
+        val bytes = resp.body?.bytes() ?: return@withContext "Empty response"
+        val filename = "splitez_expenses_${System.currentTimeMillis()}.$format"
+        val mimeType = if (format == "pdf") "application/pdf" else "text/csv"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val cv = ContentValues().apply {
+                put(MediaStore.Downloads.DISPLAY_NAME, filename)
+                put(MediaStore.Downloads.MIME_TYPE, mimeType)
+                put(MediaStore.Downloads.IS_PENDING, 1)
+            }
+            val uri = context.contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, cv)
+            uri?.let {
+                context.contentResolver.openOutputStream(it)?.use { os -> os.write(bytes) }
+                cv.clear(); cv.put(MediaStore.Downloads.IS_PENDING, 0)
+                context.contentResolver.update(it, cv, null, null)
+            }
+        } else {
+            val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            dir.mkdirs()
+            java.io.File(dir, filename).writeBytes(bytes)
+        }
+        "Saved to Downloads: $filename"
+    } catch (e: Exception) {
+        "Export failed: ${e.message}"
+    }
 }

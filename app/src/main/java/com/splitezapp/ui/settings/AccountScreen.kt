@@ -29,10 +29,13 @@ fun AccountScreen(
     user: UserProfile?,
     onBack: () -> Unit,
     onNavigate: (NavDestination) -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onCurrencyChange: ((String) -> Unit)? = null
 ) {
     val isDark = isSystemInDarkTheme()
     val cardBg = if (isDark) Color(0xFF1A1E3A) else Color.White
+    var showCurrencyPicker by remember { mutableStateOf(false) }
+    val currencies = listOf("INR", "USD", "EUR", "GBP", "AED", "SGD", "AUD", "CAD", "JPY")
     Column(modifier = Modifier.fillMaxSize()) {
         // Dark header
         Column(
@@ -91,7 +94,9 @@ fun AccountScreen(
                     onNavigate(NavDestination.EditProfile)
                 }
                 RowDivider()
-                AccountRow(Icons.Default.CurrencyExchange, "Currency", user?.currency ?: "INR") {}
+                AccountRow(Icons.Default.CurrencyExchange, "Currency", user?.currency ?: "INR") {
+                    showCurrencyPicker = true
+                }
 
                 SectionLabel("PREFERENCES")
                 AccountRow(Icons.Default.Notifications, "Notifications", "Push, email, reminders") {
@@ -138,6 +143,38 @@ fun AccountScreen(
                 Spacer(Modifier.height(32.dp))
             }
         }
+    }
+
+    if (showCurrencyPicker) {
+        AlertDialog(
+            onDismissRequest = { showCurrencyPicker = false },
+            title = { Text("Select Currency") },
+            text = {
+                Column {
+                    currencies.forEach { code ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    onCurrencyChange?.invoke(code)
+                                    showCurrencyPicker = false
+                                }
+                                .padding(vertical = 12.dp, horizontal = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(code, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
+                            if (code == (user?.currency ?: "INR")) {
+                                Icon(Icons.Default.Check, null, tint = Primary, modifier = Modifier.size(18.dp))
+                            }
+                        }
+                        if (code != currencies.last()) HorizontalDivider()
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showCurrencyPicker = false }) { Text("Cancel") }
+            }
+        )
     }
 }
 

@@ -330,6 +330,10 @@ data class AdPlacement(
     val adFreeSkip: Boolean? = null,
 )
 
+// ── Auth extras ────────────────────────────────────────────────────────
+data class ChangePasswordRequest(val currentPassword: String, val newPassword: String)
+data class SendFriendRequestBody(val email: String)
+
 // ── Generic ─────────────────────────────────────────────────────────────
 data class SuccessResponse(val success: Boolean)
 data class PaginatedResponse<T>(val items: List<T>, val nextCursor: String?)

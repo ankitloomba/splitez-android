@@ -27,7 +27,11 @@ import com.splitezapp.ui.theme.*
 @Composable
 fun EditProfileScreen(
     user: UserProfile?,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onSave: (firstName: String, lastName: String?) -> Unit = { _, _ -> },
+    isSaving: Boolean = false,
+    saveError: String? = null,
+    onDeleteAccount: (() -> Unit)? = null
 ) {
     var fullName by remember { mutableStateOf(user?.displayName ?: "") }
     var email by remember { mutableStateOf(user?.email ?: "") }
@@ -239,17 +243,26 @@ fun EditProfileScreen(
 
                 Spacer(Modifier.height(40.dp))
 
+                saveError?.let {
+                    Spacer(Modifier.height(8.dp))
+                    Text(it, color = MaterialTheme.colorScheme.error, fontSize = 13.sp)
+                }
+
                 // Save button
                 Button(
-                    onClick = { onBack() },
-                    enabled = fullName.isNotEmpty(),
+                    onClick = {
+                        val parts = fullName.trim().split(" ", limit = 2)
+                        onSave(parts[0], parts.getOrNull(1)?.ifEmpty { null })
+                    },
+                    enabled = fullName.isNotEmpty() && !isSaving,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp),
                     shape = RoundedCornerShape(28.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Primary)
                 ) {
-                    Text("Save changes", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    if (isSaving) CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
+                    else Text("Save changes", fontWeight = FontWeight.Bold, fontSize = 15.sp)
                 }
 
                 // Delete account
@@ -272,7 +285,10 @@ fun EditProfileScreen(
             title = { Text("Delete Account") },
             text = { Text("This action cannot be undone. All your data will be permanently deleted.") },
             confirmButton = {
-                TextButton(onClick = { showDeleteConfirm = false }) {
+                TextButton(onClick = {
+                    showDeleteConfirm = false
+                    onDeleteAccount?.invoke()
+                }) {
                     Text("Delete", color = Negative)
                 }
             },

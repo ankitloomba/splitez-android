@@ -161,7 +161,8 @@ fun MainScreen(authVM: AuthViewModel) {
             user = authVM.currentUser,
             onBack = { navDest = NavDestination.Tabs },
             onNavigate = { navDest = it },
-            onLogout = { authVM.logout(); navDest = NavDestination.Tabs }
+            onLogout = { authVM.logout(); navDest = NavDestination.Tabs },
+            onCurrencyChange = { authVM.updateCurrency(it) }
         )
         is NavDestination.Settings -> SettingsScreen(
             user = authVM.currentUser,
@@ -190,10 +191,27 @@ fun MainScreen(authVM: AuthViewModel) {
                 )
             }
         }
-        is NavDestination.EditProfile -> EditProfileScreen(
-            user = authVM.currentUser,
-            onBack = { navDest = NavDestination.Account }
-        )
+        is NavDestination.EditProfile -> {
+            var saving by remember { mutableStateOf(false) }
+            var saveErr by remember { mutableStateOf<String?>(null) }
+            EditProfileScreen(
+                user = authVM.currentUser,
+                onBack = { navDest = NavDestination.Account },
+                isSaving = saving,
+                saveError = saveErr,
+                onSave = { firstName, lastName ->
+                    saving = true; saveErr = null
+                    authVM.updateProfile(firstName, lastName) { ok ->
+                        saving = false
+                        if (ok) navDest = NavDestination.Account
+                        else saveErr = authVM.error
+                    }
+                },
+                onDeleteAccount = {
+                    authVM.deleteAccount { navDest = NavDestination.Tabs }
+                }
+            )
+        }
         is NavDestination.Tabs -> {
             val isDark = isSystemInDarkTheme()
             Scaffold(
@@ -313,7 +331,8 @@ fun MainScreen(authVM: AuthViewModel) {
                             user = authVM.currentUser,
                             onBack = { selectedTab = 0 },
                             onNavigate = { navDest = it },
-                            onLogout = { authVM.logout(); navDest = NavDestination.Tabs }
+                            onLogout = { authVM.logout(); navDest = NavDestination.Tabs },
+                            onCurrencyChange = { authVM.updateCurrency(it) }
                         )
                     }
                 }
