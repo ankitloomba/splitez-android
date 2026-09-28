@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.unit.sp
 import com.splitezapp.ui.theme.*
 
@@ -146,7 +147,10 @@ fun LoginScreen(
     var showPassword by remember { mutableStateOf(false) }
     var showForgotDialog by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    val isDark = isSystemInDarkTheme()
+    val cardBg = if (isDark) Color(0xFF1A1E3A) else Color.White
+
+    Column(modifier = Modifier.fillMaxSize().background(DarkBg)) {
         // Dark header
         Column(
             modifier = Modifier
@@ -154,7 +158,7 @@ fun LoginScreen(
                 .background(DarkBg)
                 .statusBarsPadding()
                 .padding(horizontal = 28.dp)
-                .padding(top = 8.dp, bottom = 32.dp)
+                .padding(top = 8.dp, bottom = 44.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SplitEZLogo(size = 28)
@@ -166,12 +170,13 @@ fun LoginScreen(
             Text("Sign in to manage your shared expenses", color = Color.White.copy(alpha = 0.6f), fontSize = 14.sp)
         }
 
-        // White card area
+        // White card area with rounded top corners overlapping the dark header
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .offset(y = (-24).dp)
                 .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
-                .background(MaterialTheme.colorScheme.surface)
+                .background(cardBg)
                 .verticalScroll(rememberScrollState())
                 .padding(28.dp)
         ) {
@@ -317,7 +322,10 @@ fun RegisterScreen(
     var showPassword by remember { mutableStateOf(false) }
     var agreedToTerms by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    val isDark = isSystemInDarkTheme()
+    val cardBg = if (isDark) Color(0xFF1A1E3A) else Color.White
+
+    Column(modifier = Modifier.fillMaxSize().background(DarkBg)) {
         // Dark header
         Column(
             modifier = Modifier
@@ -325,7 +333,7 @@ fun RegisterScreen(
                 .background(DarkBg)
                 .statusBarsPadding()
                 .padding(horizontal = 28.dp)
-                .padding(top = 8.dp, bottom = 32.dp)
+                .padding(top = 8.dp, bottom = 44.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -348,12 +356,13 @@ fun RegisterScreen(
             Text("Start splitting expenses in seconds", color = Color.White.copy(alpha = 0.6f), fontSize = 14.sp)
         }
 
-        // White card
+        // White card with rounded top corners overlapping the dark header
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .offset(y = (-24).dp)
                 .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
-                .background(MaterialTheme.colorScheme.surface)
+                .background(cardBg)
                 .verticalScroll(rememberScrollState())
                 .padding(28.dp)
         ) {
