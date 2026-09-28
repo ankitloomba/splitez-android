@@ -53,7 +53,7 @@ fun NotificationsScreen(onBack: () -> Unit) {
                 .fillMaxWidth()
                 .background(DarkBg)
                 .padding(horizontal = 20.dp)
-                .padding(top = 8.dp, bottom = 24.dp)
+                .padding(top = 8.dp, bottom = 40.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) {
@@ -99,7 +99,7 @@ fun NotificationsScreen(onBack: () -> Unit) {
 
         // Content
         Surface(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().offset(y = (-20).dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
             color = cardBg
         ) {

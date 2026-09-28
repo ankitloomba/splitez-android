@@ -70,7 +70,7 @@ fun FriendsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
-                .padding(top = 8.dp, bottom = 20.dp)
+                .padding(top = 8.dp, bottom = 40.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Friends", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
@@ -177,7 +177,7 @@ fun FriendsScreen(
 
         // Content
         Surface(
-            modifier = Modifier.fillMaxWidth().weight(1f),
+            modifier = Modifier.fillMaxWidth().weight(1f).offset(y = (-20).dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
             color = Color.White
         ) {

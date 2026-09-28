@@ -45,7 +45,7 @@ fun EditProfileScreen(
                 .fillMaxWidth()
                 .background(DarkBg)
                 .padding(horizontal = 20.dp)
-                .padding(top = 8.dp, bottom = 16.dp),
+                .padding(top = 8.dp, bottom = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Nav bar
@@ -111,7 +111,7 @@ fun EditProfileScreen(
 
         // White content
         Surface(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().offset(y = (-20).dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
             color = Color.White
         ) {

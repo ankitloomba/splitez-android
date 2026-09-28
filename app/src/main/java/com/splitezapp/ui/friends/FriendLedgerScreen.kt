@@ -63,7 +63,7 @@ fun FriendLedgerScreen(
                     .fillMaxWidth()
                     .background(DarkBg)
                     .padding(horizontal = 20.dp)
-                    .padding(top = 8.dp, bottom = 24.dp)
+                    .padding(top = 8.dp, bottom = 40.dp)
             ) {
                 // Nav bar
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -143,7 +143,7 @@ fun FriendLedgerScreen(
 
             // Content card
             Surface(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().offset(y = (-20).dp),
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
                 color = cardBg
             ) {
