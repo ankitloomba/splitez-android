@@ -55,7 +55,7 @@ fun GroupsScreen(onGroupTap: (String) -> Unit = {}) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
-                .windowInsetsPadding(WindowInsets.statusBars).padding(top = 8.dp, bottom = 20.dp)
+                .windowInsetsPadding(WindowInsets.statusBars).padding(top = 4.dp, bottom = 20.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Groups", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)

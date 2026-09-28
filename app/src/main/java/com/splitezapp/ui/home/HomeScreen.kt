@@ -56,7 +56,7 @@ fun HomeScreen(user: UserProfile?) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
-                    .windowInsetsPadding(WindowInsets.statusBars).padding(top = 8.dp, bottom = 16.dp)
+                    .windowInsetsPadding(WindowInsets.statusBars).padding(top = 4.dp, bottom = 16.dp)
             ) {
                 // Top bar
                 Row(
