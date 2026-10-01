@@ -243,9 +243,9 @@ fun ActivityScreen(onActivityTap: (String) -> Unit) {
 private fun ActivityRow(activity: Activity, onClick: () -> Unit) {
     val type = activity.type.lowercase()
     val iconInfo = when (type) {
-        "settlement_completed", "settlement_created" -> Triple("✔", Positive, Positive.copy(alpha = 0.12f))
-        "expense_created" -> Triple("🍴", Color(0xFFCC9933), Color(0xFFCC9933).copy(alpha = 0.12f))
-        "group_created" -> Triple("🏠", Primary, Primary.copy(alpha = 0.12f))
+        "settlement_completed", "settlement_created" -> Triple("✅", Positive, Positive.copy(alpha = 0.12f))
+        "expense_created" -> Triple("💰", Color(0xFFCC9933), Color(0xFFCC9933).copy(alpha = 0.12f))
+        "group_created" -> Triple("👥", Primary, Primary.copy(alpha = 0.12f))
         "friend_added" -> Triple("👤", Primary, Primary.copy(alpha = 0.12f))
         else -> Triple("🔔", Negative, Negative.copy(alpha = 0.12f))
     }

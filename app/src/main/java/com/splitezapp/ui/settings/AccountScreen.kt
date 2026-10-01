@@ -36,7 +36,7 @@ fun AccountScreen(
     val cardBg = if (isDark) Color(0xFF1A1E3A) else Color.White
     var showCurrencyPicker by remember { mutableStateOf(false) }
     val currencies = listOf("INR", "USD", "EUR", "GBP", "AED", "SGD", "AUD", "CAD", "JPY")
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().background(cardBg)) {
         // Dark header
         Column(
             modifier = Modifier
