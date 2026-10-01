@@ -150,7 +150,10 @@ private fun EmailTab(
     var sent by remember { mutableStateOf(false) }
     var selectedGroupIds by remember { mutableStateOf(setOf<String>()) }
     var showGroupPicker by remember { mutableStateOf(false) }
-    val groups = remember { SampleData.groups }
+    val groups = remember { mutableStateListOf<Group>() }
+    LaunchedEffect(Unit) {
+        try { val g = ApiClient.api.getGroups(); groups.addAll(g) } catch (_: Exception) {}
+    }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         OutlinedTextField(
@@ -723,7 +726,10 @@ private fun EnterCodeTab(
     var error by remember { mutableStateOf<String?>(null) }
     var selectedGroupIds by remember { mutableStateOf(setOf<String>()) }
     var showGroupPicker by remember { mutableStateOf(false) }
-    val groups = remember { SampleData.groups }
+    val groups = remember { mutableStateListOf<Group>() }
+    LaunchedEffect(Unit) {
+        try { val g = ApiClient.api.getGroups(); groups.addAll(g) } catch (_: Exception) {}
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -900,7 +906,7 @@ private fun InviteCodeCard(context: Context) {
 private fun rememberInviteCode(): String {
     return remember {
         val chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-        val seed = abs((SampleData.currentUser.id + "invite").hashCode())
+        val seed = abs("invite".hashCode())
         buildString {
             var s = seed
             repeat(6) { append(chars[s % chars.length]); s /= chars.length }

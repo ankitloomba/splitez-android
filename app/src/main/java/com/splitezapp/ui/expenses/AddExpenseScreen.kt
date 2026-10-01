@@ -78,6 +78,14 @@ fun AddExpenseScreen(
 ) {
     val isDark = isSystemInDarkTheme()
     val editingId = editExpense?.id
+    var meUser by remember { mutableStateOf<UserSummary?>(null) }
+    LaunchedEffect(Unit) {
+        try {
+            val me = ApiClient.api.getMe()
+            meUser = UserSummary(id = me.id, firstName = me.firstName, lastName = me.lastName,
+                profilePicture = me.profilePicture, avatar = me.avatar)
+        } catch (_: Exception) {}
+    }
 
     var amountText by remember {
         mutableStateOf(
@@ -97,16 +105,16 @@ fun AddExpenseScreen(
     var note by remember { mutableStateOf(editExpense?.note ?: "") }
     var showNotesField by remember { mutableStateOf(!note.isNullOrEmpty()) }
     var showSplitBreakdown by remember { mutableStateOf(false) }
-    var paidByUserId by remember { mutableStateOf(editExpense?.paidBy?.id ?: SampleData.currentUser.id) }
+    var paidByUserId by remember { mutableStateOf(editExpense?.paidBy?.id ?: "") }
     var selectedParticipantIds by remember {
         mutableStateOf(
             if (editExpense != null) {
                 val splitIds = editExpense.splits?.mapNotNull { it.userId }?.toSet() ?: emptySet()
-                splitIds.ifEmpty { setOf(SampleData.currentUser.id, editExpense.paidBy?.id ?: SampleData.currentUser.id) }
+                splitIds.ifEmpty { setOfNotNull(editExpense.paidBy?.id) }
             } else if (prefillFriend != null) {
-                setOf(SampleData.currentUser.id, prefillFriend.id)
+                setOf(prefillFriend.id)
             } else {
-                setOf(SampleData.currentUser.id)
+                emptySet()
             }
         )
     }
@@ -116,29 +124,39 @@ fun AddExpenseScreen(
     var selectedGroupIndex by remember { mutableStateOf<Int?>(null) }
     var showCategoryPicker by remember { mutableStateOf(false) }
     var participantSearchText by remember { mutableStateOf("") }
+    val groups = remember { mutableStateListOf<Group>() }
+    val allPeople = remember { mutableStateListOf<UserSummary>() }
 
-    val groups = remember { SampleData.groups }
-
-    // Initialize group index for edit mode
-    LaunchedEffect(Unit) {
-        if (editExpense?.groupId != null) {
-            selectedGroupIndex = groups.indexOfFirst { it.id == editExpense.groupId }.takeIf { it >= 0 }
+    // Load current user, groups and people from real API
+    LaunchedEffect(meUser) {
+        val me = meUser ?: return@LaunchedEffect
+        // Update defaults now that we know who the user is
+        if (paidByUserId.isEmpty()) paidByUserId = me.id
+        if (!selectedParticipantIds.contains(me.id)) {
+            selectedParticipantIds = selectedParticipantIds + me.id
         }
-    }
-
-    val allPeople = remember {
+        // Rebuild allPeople
         val seen = mutableSetOf<String>()
         val result = mutableListOf<UserSummary>()
-        result.add(SampleData.currentUser); seen.add(SampleData.currentUser.id)
-        for (f in SampleData.friends) {
-            if (seen.add(f.id)) result.add(f.toUserSummary())
-        }
-        for (g in SampleData.groups) {
-            for (m in g.members ?: emptyList()) {
-                if (seen.add(m.id)) result.add(m)
+        result.add(me); seen.add(me.id)
+        try {
+            for (u in ApiClient.api.getPeople()) {
+                if (seen.add(u.id)) result.add(u)
             }
-        }
-        result
+        } catch (_: Exception) {}
+        try {
+            val fetched = ApiClient.api.getGroups()
+            groups.clear(); groups.addAll(fetched)
+            if (editExpense?.groupId != null) {
+                selectedGroupIndex = fetched.indexOfFirst { it.id == editExpense.groupId }.takeIf { it >= 0 }
+            }
+            for (g in fetched) {
+                for (m in g.members ?: emptyList()) {
+                    if (seen.add(m.id)) result.add(m)
+                }
+            }
+        } catch (_: Exception) {}
+        allPeople.clear(); allPeople.addAll(result)
     }
 
     val participants = allPeople.filter { it.id in selectedParticipantIds }
@@ -182,7 +200,7 @@ fun AddExpenseScreen(
                         description = description, amount = amount, currency = selectedCurrency,
                         splitMethod = splitMethod.lowercase(), category = selectedCategory.label,
                         note = note.ifEmpty { null }, date = sdf.format(Date()),
-                        paidBy = paidByUser, createdBy = SampleData.currentUser,
+                        paidBy = paidByUser, createdBy = meUser,
                         splits = splits, groupId = selectedGroupIndex?.let { groups.getOrNull(it)?.id },
                         createdAt = isoFmt.format(Date())
                     )
@@ -291,7 +309,7 @@ fun AddExpenseScreen(
                         ListItem(
                             headlineContent = {
                                 Text(
-                                    if (user.id == SampleData.currentUser.id) "You" else user.displayName,
+                                    if (user.id == meUser?.id) "You" else user.displayName,
                                     fontWeight = FontWeight.Medium
                                 )
                             },
@@ -317,12 +335,12 @@ fun AddExpenseScreen(
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Paid by", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 Spacer(Modifier.height(8.dp))
-                val paidByOptions = if (participants.any { it.id == SampleData.currentUser.id }) participants
-                    else listOf(SampleData.currentUser) + participants
+                val paidByOptions = if (meUser == null || participants.any { it.id == meUser?.id }) participants
+                    else listOfNotNull(meUser) + participants
                 for (user in paidByOptions) {
                     ListItem(
                         headlineContent = {
-                            Text(if (user.id == SampleData.currentUser.id) "You" else user.displayName)
+                            Text(if (user.id == meUser?.id) "You" else user.displayName)
                         },
                         leadingContent = { MiniAvatar(user) },
                         trailingContent = {
@@ -496,7 +514,7 @@ fun AddExpenseScreen(
                             MiniAvatar(paidByUser!!)
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                if (paidByUser!!.id == SampleData.currentUser.id) "You" else paidByUser!!.firstName,
+                                if (paidByUser!!.id == meUser?.id) "You" else paidByUser!!.firstName,
                                 fontSize = 14.sp, maxLines = 1
                             )
                         }
@@ -584,7 +602,7 @@ fun AddExpenseScreen(
                             MiniAvatar(user)
                             Spacer(Modifier.width(10.dp))
                             Text(
-                                if (user.id == SampleData.currentUser.id) "You" else user.firstName,
+                                if (user.id == meUser?.id) "You" else user.firstName,
                                 fontWeight = FontWeight.Medium, fontSize = 14.sp
                             )
                             Spacer(Modifier.weight(1f))

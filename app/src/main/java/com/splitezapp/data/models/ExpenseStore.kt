@@ -2,18 +2,32 @@ package com.splitezapp.data.models
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import java.text.SimpleDateFormat
-import java.util.*
+import com.splitezapp.data.api.ApiClient
 
 object ExpenseStore {
-    val expenses: SnapshotStateList<Expense> = mutableStateListOf<Expense>().apply {
-        addAll(SampleData.recentExpenses)
-    }
-    val balances: SnapshotStateList<Balance> = mutableStateListOf<Balance>().apply {
-        addAll(SampleData.balances)
-    }
-    val activities: SnapshotStateList<Activity> = mutableStateListOf<Activity>().apply {
-        addAll(SampleData.activities)
+    val expenses: SnapshotStateList<Expense> = mutableStateListOf()
+    val balances: SnapshotStateList<Balance> = mutableStateListOf()
+    val activities: SnapshotStateList<Activity> = mutableStateListOf()
+
+    suspend fun reload() {
+        try {
+            val fetched = ApiClient.api.getExpenses()
+            if (fetched.isNotEmpty()) {
+                expenses.clear(); expenses.addAll(fetched)
+            }
+        } catch (_: Exception) {}
+        try {
+            val fetched = ApiClient.api.getBalances()
+            if (fetched.isNotEmpty()) {
+                balances.clear(); balances.addAll(fetched)
+            }
+        } catch (_: Exception) {}
+        try {
+            val page = ApiClient.api.getFeed()
+            if (page.data.isNotEmpty()) {
+                activities.clear(); activities.addAll(page.data)
+            }
+        } catch (_: Exception) {}
     }
 
     fun updateExpense(expense: Expense) {
@@ -23,75 +37,18 @@ object ExpenseStore {
 
     fun addExpense(expense: Expense) {
         expenses.add(0, expense)
-
-        val participantIds = expense.splits?.mapNotNull { it.userId } ?: emptyList()
-        val paidById = expense.paidBy?.id ?: SampleData.currentUser.id
-        val splitCount = maxOf(participantIds.size, 1)
-        val perPersonShare = expense.amount / splitCount
-
-        for (pid in participantIds) {
-            if (pid == paidById) continue
-            if (paidById == SampleData.currentUser.id) {
-                updateBalance(pid, perPersonShare)
-            } else if (pid == SampleData.currentUser.id) {
-                updateBalance(paidById, -perPersonShare)
-            }
-        }
-
-        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
-        sdf.timeZone = TimeZone.getTimeZone("UTC")
-        val activity = Activity(
-            id = "a_${UUID.randomUUID().toString().take(8)}",
-            type = "expense_created",
-            entityType = "expense",
-            entityId = expense.id,
-            metadata = mapOf(
-                "description" to expense.description,
-                "amount" to expense.amount,
-                "groupName" to (groupName(expense.groupId) ?: "")
-            ),
-            user = SampleData.currentUser,
-            createdAt = sdf.format(Date())
-        )
-        activities.add(0, activity)
     }
 
     fun balanceForUser(userId: String): Int {
         return balances.firstOrNull { it.userId == userId }?.amount ?: 0
     }
 
-    fun recordSettlement(friendId: String, amount: Int, method: String) {
+    fun recordSettlement(friendId: String, amount: Int) {
         val index = balances.indexOfFirst { it.userId == friendId }
         if (index >= 0) {
             val old = balances[index]
             val newAmount = if (old.amount > 0) maxOf(0, old.amount - amount) else minOf(0, old.amount + amount)
             balances[index] = Balance(userId = old.userId, user = old.user, amount = newAmount)
         }
-
-        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
-        sdf.timeZone = TimeZone.getTimeZone("UTC")
-        val activity = Activity(
-            id = "a_${UUID.randomUUID().toString().take(8)}",
-            type = "settlement_created",
-            entityType = "settlement",
-            entityId = "s_${UUID.randomUUID().toString().take(8)}",
-            metadata = mapOf("amount" to amount, "method" to method),
-            user = SampleData.currentUser,
-            createdAt = sdf.format(Date())
-        )
-        activities.add(0, activity)
-    }
-
-    private fun updateBalance(userId: String, delta: Int) {
-        val index = balances.indexOfFirst { it.userId == userId }
-        if (index >= 0) {
-            val old = balances[index]
-            balances[index] = Balance(userId = old.userId, user = old.user, amount = old.amount + delta)
-        }
-    }
-
-    private fun groupName(groupId: String?): String? {
-        if (groupId == null) return null
-        return SampleData.groups.firstOrNull { it.id == groupId }?.name
     }
 }

@@ -140,10 +140,20 @@ fun MainScreen(authVM: AuthViewModel) {
     var selectedTab by remember { mutableIntStateOf(0) }
     var navDest by remember { mutableStateOf<NavDestination>(NavDestination.Tabs) }
     val screens = listOf("friends", "groups", "activity", "account")
+    val loadedFriends = remember { mutableStateListOf<Friend>() }
 
     LaunchedEffect(Unit) {
         AnalyticsTracker.startSession()
         AnalyticsTracker.trackScreen("friends")
+        try {
+            val people = ApiClient.api.getPeople()
+            loadedFriends.clear()
+            loadedFriends.addAll(people.map { u ->
+                Friend(id = u.id, firstName = u.firstName, lastName = u.lastName,
+                    profilePicture = u.profilePicture, avatar = u.avatar)
+            })
+        } catch (_: Exception) {}
+        ExpenseStore.reload()
     }
 
     LaunchedEffect(selectedTab) {
@@ -156,7 +166,7 @@ fun MainScreen(authVM: AuthViewModel) {
             onBack = { navDest = NavDestination.Tabs }
         )
         is NavDestination.FriendLedger -> {
-            val friend = SampleData.friends.find { it.id == dest.friendId }
+            val friend = loadedFriends.find { it.id == dest.friendId }
             if (friend != null) {
                 FriendLedgerScreen(
                     friend = friend,
@@ -173,10 +183,10 @@ fun MainScreen(authVM: AuthViewModel) {
         }
         is NavDestination.AddExpense -> {
             val prefillFriend = dest.prefillFriendId?.let { id ->
-                SampleData.friends.find { it.id == id }
+                loadedFriends.find { it.id == id }
             }
             val editExpense = dest.editExpenseId?.let { id ->
-                (SampleData.recentExpenses + ExpenseStore.expenses).find { it.id == id }
+                ExpenseStore.expenses.find { it.id == id }
             }
             AddExpenseScreen(
                 onDismiss = { navDest = NavDestination.Tabs },
@@ -209,7 +219,7 @@ fun MainScreen(authVM: AuthViewModel) {
             onBack = { navDest = NavDestination.Tabs }
         )
         is NavDestination.FriendSettings -> {
-            val friend = SampleData.friends.find { it.id == dest.friendId }
+            val friend = loadedFriends.find { it.id == dest.friendId }
             if (friend != null) {
                 FriendSettingsScreen(
                     friend = friend,
@@ -347,8 +357,7 @@ fun MainScreen(authVM: AuthViewModel) {
                         )
                         2 -> ActivityScreen(
                             onActivityTap = { entityId ->
-                                val expense = (SampleData.recentExpenses + ExpenseStore.expenses)
-                                    .find { it.id == entityId }
+                                val expense = ExpenseStore.expenses.find { it.id == entityId }
                                 if (expense != null) {
                                     navDest = NavDestination.AddExpense(editExpenseId = entityId)
                                 }

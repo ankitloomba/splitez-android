@@ -41,16 +41,10 @@ fun FriendLedgerScreen(
     var showSettleUp by remember { mutableStateOf(false) }
 
     val expenses = remember(ExpenseStore.expenses.size) {
-        val friendExpenses = SampleData.recentExpenses.filter { exp ->
-            exp.paidBy?.id == friend.id || exp.createdBy?.id == friend.id
-        }.ifEmpty { SampleData.recentExpenses.take(2) }
-
-        val storeExtra = ExpenseStore.expenses.filter { exp ->
-            !friendExpenses.any { it.id == exp.id } &&
-                (exp.paidBy?.id == friend.id || exp.createdBy?.id == friend.id ||
-                    exp.splits?.any { it.userId == friend.id } == true)
-        }
-        (friendExpenses + storeExtra).sortedByDescending { it.createdAt }
+        ExpenseStore.expenses.filter { exp ->
+            exp.paidBy?.id == friend.id || exp.createdBy?.id == friend.id ||
+                exp.splits?.any { it.userId == friend.id } == true
+        }.sortedByDescending { it.createdAt }
     }
 
     val isDark = isSystemInDarkTheme()

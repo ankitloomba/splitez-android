@@ -36,11 +36,7 @@ fun FriendSettingsScreen(
     var showRemoveDialog by remember { mutableStateOf(false) }
     var showBlockDialog by remember { mutableStateOf(false) }
 
-    val commonGroups = remember {
-        SampleData.groups.filter { group ->
-            group.members?.any { it.id == friend.id } == true
-        }
-    }
+    val commonGroups = remember { emptyList<Group>() }
 
     if (showRemoveDialog) {
         AlertDialog(

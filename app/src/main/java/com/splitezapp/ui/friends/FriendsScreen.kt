@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.splitezapp.data.api.ApiClient
 import com.splitezapp.data.models.*
 import com.splitezapp.ui.components.AvatarView
 import com.splitezapp.ui.theme.*
@@ -38,7 +39,19 @@ fun FriendsScreen(
 ) {
     val isDark = isSystemInDarkTheme()
     val cardBg = if (isDark) Color(0xFF1A1E3A) else Color.White
-    val friends = remember { SampleData.friends }
+    val friends = remember { mutableStateListOf<Friend>() }
+    LaunchedEffect(Unit) {
+        try {
+            val loaded = ApiClient.api.getPeople()
+            if (loaded.isNotEmpty()) {
+                friends.clear()
+                friends.addAll(loaded.map { u ->
+                    Friend(id = u.id, firstName = u.firstName, lastName = u.lastName,
+                           profilePicture = u.profilePicture, avatar = u.avatar)
+                })
+            }
+        } catch (_: Exception) {}
+    }
     var searchText by remember { mutableStateOf("") }
     var isSearchExpanded by remember { mutableStateOf(false) }
     var sortOption by remember { mutableStateOf("name") }

@@ -42,7 +42,6 @@ fun GroupsScreen(onGroupTap: (String) -> Unit = {}) {
 
     LaunchedEffect(Unit) {
         try { groups = ApiClient.api.getGroups() } catch (_: Exception) {}
-        if (groups.isEmpty()) groups = SampleData.groups
     }
 
     val filteredGroups = remember(searchText, activeFilter, groups) {
