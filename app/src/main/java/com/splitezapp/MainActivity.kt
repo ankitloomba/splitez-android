@@ -34,6 +34,8 @@ import com.splitezapp.ui.friends.FriendSettingsScreen
 import com.splitezapp.ui.friends.FriendsScreen
 import com.splitezapp.ui.groups.GroupDetailScreen
 import com.splitezapp.ui.groups.GroupsScreen
+import com.splitezapp.ui.trips.TripDetailScreen
+import com.splitezapp.ui.trips.TripsScreen
 import com.splitezapp.ui.imports.ImportScreen
 import com.splitezapp.ui.notifications.NotificationsScreen
 import com.splitezapp.ui.settings.AccountScreen
@@ -132,6 +134,7 @@ sealed class NavDestination {
     data object Import : NavDestination()
     data class FriendSettings(val friendId: String) : NavDestination()
     data object EditProfile : NavDestination()
+    data class TripDetail(val tripId: String) : NavDestination()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -139,7 +142,7 @@ sealed class NavDestination {
 fun MainScreen(authVM: AuthViewModel) {
     var selectedTab by remember { mutableIntStateOf(0) }
     var navDest by remember { mutableStateOf<NavDestination>(NavDestination.Tabs) }
-    val screens = listOf("friends", "groups", "activity", "account")
+    val screens = listOf("friends", "groups", "trips", "activity", "account")
     val loadedFriends = remember { mutableStateListOf<Friend>() }
 
     LaunchedEffect(Unit) {
@@ -228,6 +231,10 @@ fun MainScreen(authVM: AuthViewModel) {
                 )
             }
         }
+        is NavDestination.TripDetail -> TripDetailScreen(
+            tripId = dest.tripId,
+            onBack = { navDest = NavDestination.Tabs }
+        )
         is NavDestination.EditProfile -> {
             var saving by remember { mutableStateOf(false) }
             var saveErr by remember { mutableStateOf<String?>(null) }
@@ -283,8 +290,9 @@ fun MainScreen(authVM: AuthViewModel) {
                             val tabs = listOf(
                                 TabItem(Icons.Default.People, "Friends", 0),
                                 TabItem(Icons.Default.Group, "Groups", 1),
-                                TabItem(Icons.Default.Notifications, "Activity", 2),
-                                TabItem(Icons.Default.AccountCircle, "Account", 3)
+                                TabItem(Icons.Default.Luggage, "Trips", 2),
+                                TabItem(Icons.Default.Notifications, "Activity", 3),
+                                TabItem(Icons.Default.AccountCircle, "Account", 4)
                             )
                             tabs.forEach { tab ->
                                 val isSelected = selectedTab == tab.tag
@@ -355,7 +363,10 @@ fun MainScreen(authVM: AuthViewModel) {
                         1 -> GroupsScreen(
                             onGroupTap = { navDest = NavDestination.GroupDetail(it) }
                         )
-                        2 -> ActivityScreen(
+                        2 -> TripsScreen(
+                            onTripTap = { navDest = NavDestination.TripDetail(it) }
+                        )
+                        3 -> ActivityScreen(
                             onActivityTap = { entityId ->
                                 val expense = ExpenseStore.expenses.find { it.id == entityId }
                                 if (expense != null) {
@@ -363,7 +374,7 @@ fun MainScreen(authVM: AuthViewModel) {
                                 }
                             }
                         )
-                        3 -> AccountScreen(
+                        4 -> AccountScreen(
                             user = authVM.currentUser,
                             onBack = { selectedTab = 0 },
                             onNavigate = { navDest = it },
